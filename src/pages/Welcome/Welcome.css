@@ -1,0 +1,71 @@
+:root {
+  --color-background-1: #161616;
+  --color-main-1: #a7a395;
+  --color-secondary-1: #626262;
+}
+
+body {
+  background-color: var(--color-background-1);
+  font-family: 'Space Mono', monospace;
+  margin: 0;
+  padding: 0;
+}
+
+.welcome-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  color: var(--color-secondary-1);
+}
+
+.title-block {
+  margin-top: 11rem; /* solo baja el título */
+}
+
+.title {
+  font-size: 0.95rem;
+  color: var(--color-main-1);
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+}
+
+.description-block {
+  margin-top: -0.6rem; /* espacio entre título y descripción */
+}
+
+.description {
+  font-size: 0.95rem;
+  color: var(--color-secondary-1);
+  max-width: 600px;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.menu-block {
+  margin-top: 4rem; /* espacio general desde descripción */
+}
+
+.grouped-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0rem; /* bien pegado entre INFO y COMENZAR */
+}
+
+.menu-item {
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  color: var(--color-secondary-1);
+  transition: color 0.3s ease;
+  line-height: 0; /* ajusta altura exacta entre INFO y COMENZAR */
+}
+
+.menu-item:hover {
+  color: var(--color-main-1);
+}
+
+.menu-item.spaced {
+  margin-top: 8rem; /* HOLA bien separado */
+}

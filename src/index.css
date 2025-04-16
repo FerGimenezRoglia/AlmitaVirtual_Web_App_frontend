@@ -1,15 +1,14 @@
-/* Estilos globales – Almita Virtual */
+:root {
+  --color-background-1: #161616;
+  --color-main-1: #a7a395;
+  --color-secondary-1: #626262;
+}
 
-/* Reset de márgenes y paddings */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  /* Estilo base del body */
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #fefefe;
-    color: #222;
-  }
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-background-1);
+  font-family: 'Space Mono', monospace;
+  color: var(--color-main-1);
+  letter-spacing: 0.06em
+}
