@@ -1,6 +1,6 @@
 :root {
   --color-background-1: #161616;
-  --color-main-1: #a7a395;
+  --color-main-1: #aaa8a1;
   --color-secondary-1: #626262;
 }
 
@@ -13,26 +13,27 @@ body {
 
 .welcome-wrapper {
   display: flex;
-  flex-direction: column;
+  flex-direction: row; /* Divide en columnas */
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0 5vw;
   height: 100vh;
-  padding-left: 5vw;
-  padding-right: 5vw;
   color: var(--color-secondary-1);
 }
 
 .title-block {
-  margin-top: 11rem; /* solo baja el título */
+  margin-top: 12.5rem; /* solo baja el título */
 }
 
 .title {
   font-size: 0.95rem;
   color: var(--color-main-1);
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.2rem;
   text-transform: uppercase;
 }
 
 .description-block {
-  margin-top: -0.6rem; /* espacio entre título y descripción */
+  margin-top: -0.5rem; /* espacio entre título y descripción */
 }
 
 .description {
@@ -44,7 +45,7 @@ body {
 }
 
 .menu-block {
-  margin-top: 4rem; /* espacio general desde descripción */
+  margin-top: 3rem; /* espacio general desde descripción */
 }
 
 .grouped-items {
@@ -67,5 +68,158 @@ body {
 }
 
 .menu-item.spaced {
-  margin-top: 8rem; /* HOLA bien separado */
+  margin-top: 6rem; /* HOLA bien separado */
+}
+
+/* Lado izquierdo: mantiene el diseño anterior */
+.left-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start; /* <- Esto asegura que el contenido siga alineado a la izquierda */
+}
+
+/* Lado derecho: lo que aparece al hacer click */
+.right-side {
+  width: 50%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem;
+  margin-top: 11.4rem;
+
+  /* 🔥 Agregá esta línea clave para evitar recorte */
+  overflow: visible;
+}
+
+/* Caja de texto de info */
+.info-box {
+  width: 490px;
+  padding: 1rem 2.5rem;   /* ← ACHICA espacio interno: top/bottom 1rem, left/right 1.5rem */
+  border: 0.5px solid var(--color-main-1);
+  border-radius: 8px;
+  background-color: transparent;
+  box-shadow: 0 0 10px #00000020;
+}
+
+/* Texto dentro de la caja de info */
+.info-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-secondary-1);
+  text-align: left;
+
+  /* 🔥 Eliminá cualquier límite */
+  overflow: visible;
+  display: block;
+  white-space: normal;
+}
+
+.menu-item.spaced {
+  margin-top: 8rem;
+  margin-bottom: 1rem; /* ← Este es el nuevo margen inferior */
+}
+
+@media (max-width: 768px) {
+  .welcome-wrapper {
+    flex-direction: column; /* ← Cambia a diseño vertical */
+    align-items: center;
+    padding: 2rem 5vw;
+  }
+
+  .left-side, .right-side {
+    width: 100%;
+  }
+
+  .right-side {
+    margin-top: 3rem;
+  }
+}
+
+.sub-item {
+  margin-left: 0;
+  cursor: pointer;
+  color: var(--color-secondary-1);
+  transition: color 0.3s ease;
+}
+
+.sub-item:hover {
+  color: var(--color-main-1);
+}
+
+/* 🍄 FORMULARIO UNIVERSAL PARA LOGIN & REGISTER */
+.form-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: 100%;
+  padding: 1.6rem 0.5rem; /* ← agrega margen superior e inferior igualados */
+}
+
+.form-box label {
+  font-size: 0.95rem;
+  color: var(--color-main-1); /* ← color cremita */
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.form-box input {
+  padding: 0.8rem 1rem;
+  font-family: 'Space Mono', monospace;
+  background-color: transparent;
+  border: 1px solid var(--color-main-1);
+  color: var(--color-main-1);
+  font-size: 0.95rem;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.form-box input:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-main-1); /* ← brillo sutil, cremoso */
+  border-color: var(--color-main-1);
+}
+
+.form-box input::placeholder {
+  color: var(--color-secondary-1);
+}
+
+.form-box .hint {
+  font-size: 0.8rem;
+  color: var(--color-secondary-1);
+  margin-top: -0.6rem;
+}
+
+.form-box button {
+  align-self: flex-start;
+  margin-top: 2rem;
+  padding: 0.7rem 1.4rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: var(--color-main-1);
+  background-color: transparent;
+  border: 1px solid var(--color-main-1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.form-box button:hover {
+  background-color: var(--color-main-1);
+  color: var(--color-background-1);
+}
+
+/* 🍄 IMAGEN O ANIMACIÓN DE HOLA */
+.almita-image {
+  display: block;
+  max-width: 100%;
+  max-height: 400px;
+  margin: 0 auto;
+  border-radius: 8px;
+  object-fit: contain; /* asegura que mantenga proporciones */
+  padding: 1rem 0;
 }
