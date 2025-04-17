@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Welcome.css';
+
+function getRoleFromToken(token) {
+  try {
+    const payload = token.split('.')[1]; // Parte del medio del JWT
+    const decoded = JSON.parse(atob(payload)); // Decodifica el JSON
+    return decoded.role || null; // Devuelve el rol si existe
+  } catch (err) {
+    console.error('Token inválido:', err);
+    return null;
+  }
+}
 
 const Welcome = () => {
   const [activeSection, setActiveSection] = useState(null);
+  const navigate = useNavigate();
 
   return (
     <section className="welcome-wrapper">
@@ -63,33 +76,124 @@ const Welcome = () => {
 
         {activeSection === 'login' && (
           <div className="info-box">
-            <form className="form-box">
+            <form
+              className="form-box"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const username = e.target[0].value;
+                const password = e.target[1].value;
+
+                try {
+                  const response = await fetch('http://localhost:8080/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                  });
+
+                  if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token); // 🔐 Guarda el token
+
+                    const role = getRoleFromToken(data.token); // 👑 Extrae el rol
+
+                    if (role === 'ROLE_ADMIN') {
+                      alert('🔵 Bienvenida! Admin. Redirigiendo al panel de administración...');
+                      navigate('/admin');
+                    } else {
+                      alert('🟢 Bienvenida! Redirigiendo a tu perfil...');
+                      navigate('/perfil');
+                    }
+                  } else {
+                    const errorJson = await response.json();
+                    const errorMessage = errorJson.message || 'Error desconocido';
+                    alert(`❌ Error: ${errorMessage}`);
+                  }
+                } catch (err) {
+                  alert('❌ Error de red: ' + err.message);
+                }
+              }}
+            >
               <label>Usuario
-                <input type="text" placeholder="Tu nombre de usuario" required minLength="4" maxLength="20" />
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Tu nombre de usuario"
+                  required
+                  minLength="4"
+                  maxLength="20"
+                />
               </label>
+
               <label>Contraseña
-                <input type="password" placeholder="Tu contraseña" required minLength="8" />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Tu contraseña"
+                  required
+                  minLength="8"
+                />
               </label>
-              <button type="submit">Iniciar Sesión</button>
+
+              <button type="submit">Iniciar sesión</button>
             </form>
           </div>
         )}
 
         {activeSection === 'register' && (
           <div className="info-box">
-            <form className="form-box">
-              <label>Usuario
-                <input type="text" placeholder="Tu nombre de usuario" required minLength="4" maxLength="20" />
+            <form
+              className="form-box"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const username = e.target.username.value;
+                const password = e.target.password.value;
+
+                try {
+                  const response = await fetch('http://localhost:8080/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                  });
+
+                  if (response.ok) {
+                    alert('🟢 Usuario registrado correctamente');
+                    setActiveSection('login');
+                  } else {
+                    const errorJson = await response.json();
+                    alert('❌ Error: ' + (errorJson.message || 'Error desconocido'));
+                  }
+                } catch (err) {
+                  alert('❌ Error de red: ' + err.message);
+                }
+              }}
+            >
+              <label>
+                Usuario
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Tu nombre de usuario"
+                  required
+                  minLength="4"
+                  maxLength="20"
+                />
               </label>
-              <label>Contraseña
+
+              <label>
+                Contraseña
                 <input
                   type="password"
+                  name="password"
                   placeholder="Tu contraseña con mínimo 8 caracteres"
                   required
                   minLength="8"
                 />
               </label>
-              <span className="hint">Debe contener al menos una letra mayúscula, un número y un carácter especial.</span>
+
+              <span className="hint">
+                Debe contener al menos una letra mayúscula, un número y un carácter especial.
+              </span>
+
               <button type="submit">Registrarse</button>
             </form>
           </div>
