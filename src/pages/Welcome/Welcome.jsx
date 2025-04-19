@@ -2,11 +2,22 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Welcome.css';
 
+function getUsernameFromToken(token) {
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.sub || 'Usuario';
+  } catch (err) {
+    console.error('Token inválido:', err);
+    return 'Usuario';
+  }
+}
+
 function getRoleFromToken(token) {
   try {
-    const payload = token.split('.')[1]; // Parte del medio del JWT
-    const decoded = JSON.parse(atob(payload)); // Decodifica el JSON
-    return decoded.role || null; // Devuelve el rol si existe
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.role || null;
   } catch (err) {
     console.error('Token inválido:', err);
     return null;
@@ -93,7 +104,8 @@ const Welcome = () => {
                   if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem('token', data.token); // 🔐 Guarda el token
-
+                    localStorage.setItem('username', getUsernameFromToken(data.token)); // 🧠 Guarda el username
+                    
                     const role = getRoleFromToken(data.token); // 👑 Extrae el rol
 
                     if (role === 'ROLE_ADMIN') {
@@ -101,7 +113,7 @@ const Welcome = () => {
                       navigate('/admin');
                     } else {
                       alert('🟢 Bienvenida! Redirigiendo a tu perfil...');
-                      navigate('/perfil');
+                      navigate('/profile');
                     }
                   } else {
                     const errorJson = await response.json();

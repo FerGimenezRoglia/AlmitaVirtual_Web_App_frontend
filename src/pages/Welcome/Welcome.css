@@ -22,7 +22,7 @@ body {
 }
 
 .title-block {
-  margin-top: 12.5rem; /* solo baja el título */
+  margin-top: 8rem; /* solo baja el título */
 }
 
 .title {
@@ -87,7 +87,7 @@ body {
   align-items: flex-start;
   justify-content: center;
   padding: 2rem;
-  margin-top: 11.4rem;
+  margin-top: 8rem;
 
   /* 🔥 Agregá esta línea clave para evitar recorte */
   overflow: visible;

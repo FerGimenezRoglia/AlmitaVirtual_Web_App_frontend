@@ -1,0 +1,16 @@
+/* 🎯 Estilos para el panel de administración */
+.admin-wrapper {
+    min-height: 100vh;
+    background-color: var(--color-background-1);
+    color: var(--color-main-1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Space Mono', monospace;
+  }
+  
+  .admin-title {
+    font-size: 1.3rem;
+    letter-spacing: 0.05rem;
+    text-transform: uppercase;
+  }
