@@ -105,7 +105,7 @@ const Welcome = () => {
                     const data = await response.json();
                     localStorage.setItem('token', data.token); // 🔐 Guarda el token
                     localStorage.setItem('username', getUsernameFromToken(data.token)); // 🧠 Guarda el username
-                    
+
                     const role = getRoleFromToken(data.token); // 👑 Extrae el rol
 
                     if (role === 'ROLE_ADMIN') {
@@ -213,13 +213,25 @@ const Welcome = () => {
 
         {activeSection === 'hola' && (
           <div className="info-box">
+            {/* Solo cambiás esta línea para imagen o video, y no tocás nada más */}
             <img
-              src="https://res.cloudinary.com/dwk4mvgtp/image/upload/v1744849074/pngwing.com_rid2zl.png"
-              alt="Almita Animada"
+              src="https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/kemhyfrss9gqluvtxiju.png"
               className="almita-image"
             />
+            {/*
+    <video
+      autoPlay
+      loop
+      muted
+      playsInline
+      className="almita-image"
+    >
+      <source src="TU_URL_VIDEO_CLOUDINARY" type="video/mp4" />
+    </video>
+    */}
           </div>
         )}
+
       </div>
     </section>
   );

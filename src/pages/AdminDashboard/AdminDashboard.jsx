@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import './Profile.css';
 import { useNavigate } from 'react-router-dom';
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 
-
-const Profile = () => {
+const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState(null);
-  const username = localStorage.getItem('username') || 'Usuario';
+  const username = localStorage.getItem('username') || 'Admin';
   const [userEnvs, setUserEnvs] = useState([]);
-  const navigate = useNavigate();
-
+  const [allEnvs, setAllEnvs] = useState([]);
   const [selectedEnvId, setSelectedEnvId] = useState(null);
   const [editFormData, setEditFormData] = useState({
     title: '',
@@ -20,42 +17,32 @@ const Profile = () => {
 
   const [createError, setCreateError] = useState("");
   const [editError, setEditError] = useState("");
-
-  // 🧨 ID del entorno que está pendiente de confirmación para eliminar
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
-  // Carga los entornos del usuario cuando se selecciona la sección 'ver'
+  const navigate = useNavigate();
+
   useEffect(() => {
-    if (
-      (activeSection === 'ver' ||
-        activeSection === 'editar' ||
-        activeSection === 'eliminar') &&
-      userEnvs.length === 0
-    ) {
+    if (["ver", "editar", "eliminar"].includes(activeSection)) {
       fetchUserEnvironments();
     }
   }, [activeSection]);
 
-  // 🧼 Limpiar error cuando se cambia de sección
   useEffect(() => {
     setCreateError("");
-  }, [activeSection]);
-
-  // 🧼 Limpiar error cuando se cambia de sección
-  useEffect(() => {
     setEditError("");
   }, [activeSection]);
 
-  // Llama al backend para obtener los entornos del usuario autenticado
   const fetchUserEnvironments = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
+    const currentUserId = "1"; // 👑 Por ahora hardcodeado a admin
+
     if (!token) {
-      alert('⚠️ No estás autenticado');
+      alert("⚠️ No estás autenticado");
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:8080/environments', {
+      const response = await fetch("http://localhost:8080/environments", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -63,17 +50,20 @@ const Profile = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setUserEnvs(data);
+        const userEnvs = data.filter((env) => env.userId == currentUserId);
+        const otherEnvs = data.filter((env) => env.userId != currentUserId);
+        setUserEnvs(userEnvs);
+        setAllEnvs(otherEnvs);
       } else {
         const errorText = await response.text();
-        alert('❌ Error al obtener entornos: ' + errorText);
+        alert("❌ Error al obtener entornos: " + errorText);
       }
     } catch (err) {
-      alert('❌ Error de red: ' + err.message);
+      alert("❌ Error de red: " + err.message);
     }
   };
 
-  // ⭕️ Maneja la creación de un nuevo entorno
+  // ⭕️ Maneja la creación de un nuevo entorno (igual a Profile)
   const handleCreateEnvironment = async (e) => {
     e.preventDefault();
 
@@ -83,22 +73,19 @@ const Profile = () => {
       return;
     }
 
-    // 🔽 Extraemos todos los valores del formulario
     const title = e.target.title.value;
     const description = e.target.description.value;
     const color = e.target.color.value;
-    const file = e.target.file.files[0]; // ✅ archivo opcional
+    const file = e.target.file.files[0];
 
-    // 🛑 Validación manual del campo título
     if (!title.trim()) {
       setCreateError("⚠️ El título es obligatorio!");
       return;
     }
-    setCreateError(""); // ✅ Limpiamos error si pasa la validación
 
-    let fileUrl = ""; // 🌐 inicializamos el link del archivo vacío
+    setCreateError("");
+    let fileUrl = "";
 
-    // 🔁 Si el usuario cargó un archivo, lo subimos a Cloudinary
     if (file) {
       try {
         const uploadedUrl = await uploadFileToCloudinary(file);
@@ -110,15 +97,13 @@ const Profile = () => {
       }
     }
 
-    // 🧱 Armamos el objeto con todos los campos
     const payload = {
       title,
       description,
       color,
-      url: fileUrl // puede ser vacío si no subió archivo
+      url: fileUrl
     };
 
-    // 🚀 Mandamos el entorno al backend
     try {
       const response = await fetch("http://localhost:8080/environments", {
         method: "POST",
@@ -132,7 +117,6 @@ const Profile = () => {
       if (response.status === 201) {
         const data = await response.json();
         alert("🟢 Entorno creado con éxito");
-        // ✅ Redirigimos al entorno recién creado
         navigate(`/environment/${data.id}`);
       } else {
         const errorText = await response.text();
@@ -142,13 +126,12 @@ const Profile = () => {
       alert("❌ Error de red: " + err.message);
     }
   };
-  // ⭕️ fin de función
 
   // 🍎 Maneja la actualización de un entorno existente
   const handleUpdateEnvironment = async (e) => {
     e.preventDefault();
 
-    setEditError(""); // ✅ Limpiamos el error si pasa validación
+    setEditError("");
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -156,16 +139,14 @@ const Profile = () => {
       return;
     }
 
-    // 🛑 Validación manual del campo título
     if (!editFormData.title.trim()) {
       setEditError("⚠️ El título es obligatorio!");
       return;
     }
-    setEditError(""); // ✅ Limpiamos error si pasa la validación
 
     try {
-      // 1. Subimos archivo si hay uno nuevo
       let newFileUrl = editFormData.url;
+
       if (editFormData.file) {
         const uploadedUrl = await uploadFileToCloudinary(editFormData.file);
         if (!uploadedUrl) {
@@ -175,7 +156,6 @@ const Profile = () => {
         newFileUrl = uploadedUrl;
       }
 
-      // 2. Actualizamos campos básicos (sin archivo aún)
       const baseUpdate = {
         title: editFormData.title,
         description: editFormData.description,
@@ -197,7 +177,6 @@ const Profile = () => {
         return;
       }
 
-      // 3. Si se subió un archivo nuevo, lo registramos en el backend
       if (editFormData.file) {
         const registerFile = await fetch(`http://localhost:8080/environments/${selectedEnvId}/file`, {
           method: "POST",
@@ -223,11 +202,8 @@ const Profile = () => {
     }
   };
 
-  // 🍎 Maneja la eliminación de un entorno
+  // ❌ Maneja la eliminación de un entorno
   const handleDeleteEnvironment = async (envId) => {
-    //const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este entorno?");
-    //if (!confirmDelete) return;
-
     const token = localStorage.getItem("token");
     if (!token) {
       alert("⚠️ No estás autenticado");
@@ -243,9 +219,9 @@ const Profile = () => {
       });
 
       if (response.ok) {
+        //alert("🗑️ Entorno eliminado correctamente.");
         setConfirmDeleteId(null);
-        // alert("🗑️ Entorno eliminado correctamente.");
-        fetchUserEnvironments(); // 🔁 Refresca la lista
+        fetchUserEnvironments(); // 🔁 Refresca lista
       } else {
         const errorText = await response.text();
         alert("❌ Error al eliminar entorno: " + errorText);
@@ -257,55 +233,49 @@ const Profile = () => {
 
   return (
     <section className="welcome-wrapper">
-      {/* BLOQUE IZQUIERDO */}
+      {/* LADO IZQUIERDO */}
       <div className="left-side">
         <div className="title-block">
-          <p className="title">/ USUARIO _ {username}</p>
+          <p className="title">/ ADMIN _ {username}</p>
         </div>
 
         <div className="description-block">
           <p className="description">
-            COMO USUARIO, PUEDES CREAR Y GESTIONAR TUS ENTORNOS PERSONALES PARA ALOJAR TU ARCHIVO DIGITAL Y TENERLOS SIEMPRE LISTOS PARA COMPARTIR.
+            COMO ADMINISTRADOR, PUEDES ACCEDER Y GESTIONAR TODOS LOS ENTORNOS CREADOS POR LOS USUARIOS, ASEGURANDO SU CORRECTO FUNCIONAMIENTO.
           </p>
         </div>
 
         <div className="menu-block">
           <div className="grouped-items">
-            <p className="menu-item first" onClick={() => setActiveSection('ver')}>VER _</p>
-            <p className="menu-item" onClick={() => setActiveSection('crear')}>CREAR _</p>
-            <p
-              className="menu-item"
-              onClick={() => {
-                setSelectedEnvId(null);
-                setActiveSection('editar');
-              }}
-            >
-              EDITAR _
-            </p>
-            <p className="menu-item" onClick={() => setActiveSection('eliminar')}>ELIMINAR _</p>
+            <p className="menu-item first" onClick={() => setActiveSection("ver")}>VER _</p>
+            <p className="menu-item" onClick={() => setActiveSection("crear")}>CREAR _</p>
+            <p className="menu-item" onClick={() => { setSelectedEnvId(null); setActiveSection("editar"); }}>EDITAR _</p>
+            <p className="menu-item" onClick={() => setActiveSection("eliminar")}>ELIMINAR _</p>
           </div>
 
-          <p className="menu-item estado-item" onClick={() => setActiveSection('estado')}>
-            [ALMITA]
-          </p>
+          <p className="menu-item estado-item" onClick={() => setActiveSection("estado")}>[ALMITA]</p>
 
-          <p
-            className="menu-item spaced"
-            onClick={() => navigate("/")}>
-            INICIO.
-          </p>
+          <p className="menu-item spaced" onClick={() => navigate("/")}>INICIO.</p>
         </div>
       </div>
 
-      {/* BLOQUE DERECHO */}
+      {/* LADO DERECHO */}
       <div className="right-side">
 
-
-        {activeSection === 'ver' && (
+        {activeSection === "ver" && (
           <div className="info-box">
-            <p className="info-text">TUS ENTORNOS CREADOS _</p>
+            <p className="info-text">TUS ENTORNOS COMO ADMIN _</p>
             <ul className="env-list">
               {userEnvs.map((env) => (
+                <li key={env.id} className="env-item" onClick={() => navigate(`/environment/${env.id}`)}>
+                  <span className="env-dot">•</span> {env.title}
+                </li>
+              ))}
+            </ul>
+
+            <p className="info-text">ENTORNOS DE OTROS USUARIOS _</p>
+            <ul className="env-list">
+              {allEnvs.map((env) => (
                 <li key={env.id} className="env-item" onClick={() => navigate(`/environment/${env.id}`)}>
                   <span className="env-dot">•</span> {env.title}
                 </li>
@@ -316,18 +286,13 @@ const Profile = () => {
 
         {activeSection === 'crear' && (
           <div className="info-box">
-            <form
-              className="form-box"
-              onSubmit={handleCreateEnvironment}
-            >
+            <form className="form-box" onSubmit={handleCreateEnvironment}>
               <label>
                 Título del Entorno *
                 <input type="text" name="title" placeholder="Ej: Currículum Vitae" maxLength="100" />
               </label>
 
-              {createError && (
-                <span className="error-msg">{createError}</span>
-              )}
+              {createError && <span className="error-msg">{createError}</span>}
 
               <label>
                 Descripción
@@ -371,7 +336,7 @@ const Profile = () => {
                     name="environment"
                     onChange={(e) => {
                       const selectedId = e.target.value;
-                      const selected = userEnvs.find(env => env.id.toString() === selectedId);
+                      const selected = [...userEnvs, ...allEnvs].find(env => env.id.toString() === selectedId);
                       setSelectedEnvId(selectedId);
                       setEditFormData({
                         title: selected?.title || '',
@@ -382,7 +347,7 @@ const Profile = () => {
                     }}
                   >
                     <option value="">Seleccionar _</option>
-                    {userEnvs.map(env => (
+                    {[...userEnvs, ...allEnvs].map(env => (
                       <option key={env.id} value={env.id}>{env.title}</option>
                     ))}
                   </select>
@@ -456,9 +421,9 @@ const Profile = () => {
 
         {activeSection === 'eliminar' && (
           <div className="info-box">
-            <p className="info-text">TUS ENTORNOS A ELIMINAR _</p>
+            <p className="info-text">TODOS LOS ENTORNOS _</p>
             <ul className="env-list">
-              {userEnvs.map((env) => (
+              {[...userEnvs, ...allEnvs].map((env) => (
                 <li
                   key={env.id}
                   className="env-item"
@@ -504,9 +469,8 @@ const Profile = () => {
           </div>
         </div>
       )}
-
     </section>
   );
 };
 
-export default Profile;
+export default AdminDashboard;

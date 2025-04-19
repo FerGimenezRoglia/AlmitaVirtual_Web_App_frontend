@@ -36,14 +36,6 @@ body {
   margin-top: -0.5rem; /* espacio entre título y descripción */
 }
 
-.description {
-  font-size: 0.95rem;
-  color: var(--color-secondary-1);
-  max-width: 600px;
-  line-height: 1.6;
-  text-transform: uppercase;
-}
-
 .menu-block {
   margin-top: 3rem; /* espacio general desde descripción */
 }
@@ -214,12 +206,28 @@ body {
 }
 
 /* 🍄 IMAGEN O ANIMACIÓN DE HOLA */
+.video-container {
+  position: relative;
+  width: 100%;                /* Lo hacemos más angosto */
+  padding-top: 100%;          /* Mantiene proporción cuadrada pero más chico */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 10px #00000040;
+  margin: 1.4rem auto 1.4rem auto;  /* Margen superior: 2rem, inferior: 3rem */
+}
+
+.video-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* o "cover" si preferís que llene el espacio */
+}
+
 .almita-image {
-  display: block;
   max-width: 100%;
   max-height: 400px;
-  margin: 0 auto;
+  object-fit: contain;
   border-radius: 8px;
-  object-fit: contain; /* asegura que mantenga proporciones */
-  padding: 1rem 0;
 }
