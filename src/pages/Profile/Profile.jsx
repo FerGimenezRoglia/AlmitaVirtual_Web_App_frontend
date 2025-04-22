@@ -2,13 +2,24 @@ import React, { useState, useEffect } from 'react';
 import './Profile.css';
 import { useNavigate } from 'react-router-dom';
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
+import { getUsernameFromToken } from '../../utils/jwtUtils';
 
 
 const Profile = () => {
   const [activeSection, setActiveSection] = useState(null);
-  const username = localStorage.getItem('username') || 'Usuario';
+  const token = localStorage.getItem('token');
+  const username = getUsernameFromToken(token);
   const [userEnvs, setUserEnvs] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const role = token ? JSON.parse(atob(token.split('.')[1])).role : null;
+    if (role !== 'ROLE_USER') {
+      alert('❌ Acceso denegado. Esta página es solo para usuarios.');
+      navigate('/admin');
+    }
+  }, []);
 
   const [selectedEnvId, setSelectedEnvId] = useState(null);
   const [editFormData, setEditFormData] = useState({

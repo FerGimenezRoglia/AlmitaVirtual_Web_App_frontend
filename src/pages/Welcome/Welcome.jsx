@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Welcome.css';
 
+// 🔍 Decodifica el token para extraer el nombre de usuario
 function getUsernameFromToken(token) {
   try {
     const payload = token.split('.')[1];
@@ -13,11 +14,13 @@ function getUsernameFromToken(token) {
   }
 }
 
+// 🔍 Extrae el rol desde el JWT (acepta distintos formatos posibles del token)
 function getRoleFromToken(token) {
   try {
     const payload = token.split('.')[1];
     const decoded = JSON.parse(atob(payload));
-    return decoded.role || null;
+    console.log("🎯 Token decodificado:", decoded);
+    return decoded.role || decoded.authorities?.[0]?.authority || null;
   } catch (err) {
     console.error('Token inválido:', err);
     return null;
@@ -27,6 +30,24 @@ function getRoleFromToken(token) {
 const Welcome = () => {
   const [activeSection, setActiveSection] = useState(null);
   const navigate = useNavigate();
+
+  const [loginSuccess, setLoginSuccess] = useState(false); // 🟢 Login exitoso
+  const [pendingRole, setPendingRole] = useState(null); // 👑 Rol pendiente para redirigir
+
+  // 🧭 Redirección segura después de login
+  useEffect(() => {
+    if (loginSuccess && pendingRole) {
+      if (pendingRole === 'ROLE_ADMIN') {
+        alert('🔵 Bienvenida Admin');
+        navigate('/admin');
+      } else if (pendingRole === 'ROLE_USER') {
+        alert('🟢 Bienvenida Usuario');
+        navigate('/profile');
+      } else {
+        alert('❌ Rol desconocido. No tienes acceso.');
+      }
+    }
+  }, [loginSuccess, pendingRole]);
 
   return (
     <section className="welcome-wrapper">
@@ -64,19 +85,17 @@ const Welcome = () => {
       {/* BLOQUE DERECHO */}
       <div className="right-side">
 
+        {/* 🎨 INFO */}
         {activeSection === 'info' && (
           <div className="info-box">
             <div className="info-text">
-              <p>
-                "Almita Virtual" es una App web donde cada usuario puede crear entornos personalizados que sirven como espacio digital para presentar o compartir su currículum, carta de presentación u otros documentos importantes.
-              </p>
-              <p>
-                Cada entorno está representado visualmente por una Almita, un personaje animado que cambia de estado según la interacción del usuario o visitante. La propuesta combina solidez técnica con una experiencia estética sensible y simbólica.
-              </p>
+              <p>"Almita Virtual" es una App web donde cada usuario puede crear entornos personalizados para presentar o compartir sus documentos importantes, como el Currículum Vitae o carta de presentación.</p>
+              <p>Cada entorno está representado por un personaje "Almita" que cambia de estado según la interacción del usuario o visitante. La propuesta combina solidez técnica con una experiencia estética sensible y simbólica.</p>
             </div>
           </div>
         )}
 
+        {/* ✨ COMENZAR */}
         {activeSection === 'comenzar' && (
           <div className="info-box">
             <p className="info-text">
@@ -85,6 +104,7 @@ const Welcome = () => {
           </div>
         )}
 
+        {/* 🔐 LOGIN */}
         {activeSection === 'login' && (
           <div className="info-box">
             <form
@@ -101,24 +121,27 @@ const Welcome = () => {
                     body: JSON.stringify({ username, password }),
                   });
 
-                  if (response.ok) {
-                    const data = await response.json();
-                    localStorage.setItem('token', data.token); // 🔐 Guarda el token
-                    localStorage.setItem('username', getUsernameFromToken(data.token)); // 🧠 Guarda el username
-
-                    const role = getRoleFromToken(data.token); // 👑 Extrae el rol
-
-                    if (role === 'ROLE_ADMIN') {
-                      alert('🔵 Bienvenida! Admin. Redirigiendo al panel de administración...');
-                      navigate('/admin');
-                    } else {
-                      alert('🟢 Bienvenida! Redirigiendo a tu perfil...');
-                      navigate('/profile');
-                    }
-                  } else {
+                  if (!response.ok) {
                     const errorJson = await response.json();
-                    const errorMessage = errorJson.message || 'Error desconocido';
-                    alert(`❌ Error: ${errorMessage}`);
+                    alert('❌ Error: ' + (errorJson.message || 'Error desconocido'));
+                    return;
+                  }
+
+                  const data = await response.json();
+                  const token = data.token;
+                  localStorage.setItem('token', token);
+
+                  const payload = JSON.parse(atob(token.split('.')[1]));
+                  const role = payload.role || payload.authorities?.[0]?.authority;
+
+                  if (role === 'ROLE_ADMIN') {
+                    alert('🔵 Bienvenida Admin');
+                    window.location.href = '/admin';
+                  } else if (role === 'ROLE_USER') {
+                    alert('🟢 Bienvenida Usuario');
+                    window.location.href = '/profile';
+                  } else {
+                    alert('❌ Rol desconocido. No tienes acceso.');
                   }
                 } catch (err) {
                   alert('❌ Error de red: ' + err.message);
@@ -151,6 +174,8 @@ const Welcome = () => {
           </div>
         )}
 
+
+        {/* 🧾 REGISTRO */}
         {activeSection === 'register' && (
           <div className="info-box">
             <form
@@ -211,27 +236,15 @@ const Welcome = () => {
           </div>
         )}
 
+        {/* 🎨 BLOQUE VISUAL: ALMITA */}
         {activeSection === 'hola' && (
           <div className="info-box">
-            {/* Solo cambiás esta línea para imagen o video, y no tocás nada más */}
             <img
               src="https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/kemhyfrss9gqluvtxiju.png"
               className="almita-image"
             />
-            {/*
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="almita-image"
-    >
-      <source src="TU_URL_VIDEO_CLOUDINARY" type="video/mp4" />
-    </video>
-    */}
           </div>
         )}
-
       </div>
     </section>
   );

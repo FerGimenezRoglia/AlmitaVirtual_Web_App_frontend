@@ -231,3 +231,10 @@ body {
   object-fit: contain;
   border-radius: 8px;
 }
+
+input:-webkit-autofill {
+  background-color: #2e2e2e !important;
+  -webkit-box-shadow: 0 0 0px 0px #2e2e2e inset !important;
+  -webkit-text-fill-color: var(--color-main-1) !important; /* ← Color cremita */
+  transition: background-color 5000s ease-in-out 100s;
+}

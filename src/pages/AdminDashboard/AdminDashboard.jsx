@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
+import { getUsernameFromToken } from '../../utils/jwtUtils';
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState(null);
-  const username = localStorage.getItem('username') || 'Admin';
+  const token = localStorage.getItem('token');
+  const username = getUsernameFromToken(token);
   const [userEnvs, setUserEnvs] = useState([]);
   const [allEnvs, setAllEnvs] = useState([]);
   const [selectedEnvId, setSelectedEnvId] = useState(null);
@@ -20,6 +22,15 @@ const AdminDashboard = () => {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const role = token ? JSON.parse(atob(token.split('.')[1])).role : null;
+    if (role !== 'ROLE_ADMIN') {
+      alert('❌ Acceso denegado. Esta página es solo para administradores.');
+      navigate('/profile');
+    }
+  }, []); 
 
   useEffect(() => {
     if (["ver", "editar", "eliminar"].includes(activeSection)) {
