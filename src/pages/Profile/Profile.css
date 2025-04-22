@@ -114,15 +114,15 @@
 }
 
 .env-list {
-  list-style: none; /* ❌ Quita el puntito de la lista */
-  padding-left: 0;   /* ❌ Elimina margen por defecto */
+  list-style: none; /* Quita el puntito de la lista */
+  padding-left: 0;   /* Elimina margen por defecto */
 }
 
 .env-item {
   cursor: pointer;
   color: var(--color-secondary-1); /* Gris claro */
   margin-bottom: 0.6rem;
-  text-decoration: none; /* ❌ Quita subrayado */
+  text-decoration: none; /* Quita subrayado */
   font-size: 0.95rem;
   transition: color 0.3s ease;
 }
@@ -184,7 +184,7 @@ select:focus {
 .file-upload-label {
   display: inline-block;
   padding: 10px 16px;
-  background-color: #2e2e2e; /* 🟢 Gris del sistema */
+  background-color: #2e2e2e; /* Gris del sistema */
   border: 1px solid #ccc;
   border-radius: 6px;
   color: #ccc;
@@ -280,6 +280,7 @@ select:focus {
   background-color: var(--color-main-1);
   color: #000;
 }
+/*termina modal aquí...
 
 /* 🍄 IMAGEN O ANIMACIÓN DE HOLA */
 .video-container {

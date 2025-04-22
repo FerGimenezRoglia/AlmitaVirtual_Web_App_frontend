@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import './Environment.css';
 
 const Environment = () => {
   const { id } = useParams();
@@ -68,14 +69,65 @@ const Environment = () => {
 
   if (!env) return <p>Cargando...</p>;
 
+  // 🌟 Devuelve una imagen según el estado
+  const renderStateImage = (status) => {
+    const statusImages = {
+      IDLE: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/kemhyfrss9gqluvtxiju.png",
+      ACTIVE: "https://res.cloudinary.com/demo/video/upload/v1616519750/active_sample.jpg",
+      REFLECTIVE: "https://res.cloudinary.com/demo/video/upload/v1616519750/reflective_sample.jpg",
+      EXITED: "https://res.cloudinary.com/demo/video/upload/v1616519750/exited_sample.jpg",
+      INSPIRED: "https://res.cloudinary.com/demo/video/upload/v1616519750/inspired_sample.jpg",
+    };
+
+    return (
+      <img
+        src={statusImages[status] || statusImages["IDLE"]}
+        alt={`Estado ${status}`}
+        className="almita-image"
+      />
+    );
+  };
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>{env.title}</h1>
-      <p><strong>Descripción:</strong> {env.description}</p>
-      <p><strong>Color:</strong> {env.color}</p>
-      <p><strong>Estado:</strong> {env.status}</p>
-      <p><strong>Archivo:</strong> <a href={env.url} target="_blank" rel="noopener noreferrer">{env.url}</a></p>
-    </div>
+    <section className="profile-wrapper">
+      {/* IZQUIERDA - IMAGEN DEL ESTADO */}
+      <div className="left-side">
+        <div className="video-container">
+          <img
+            src="https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/kemhyfrss9gqluvtxiju.png"
+            alt="Estado visual"
+            className="almita-image"
+          />
+        </div>
+
+        <div className="title-block">
+          <p className="title">/ ENTORNO</p>
+        </div>
+        <div className="description-block">
+          <p className="description">{env.title.toUpperCase()}</p>
+        </div>
+
+      </div>
+
+      {/* DERECHA - FUTURA INTERFAZ */}
+      <div className="right-side">
+        <div className="info-box">
+          <p className="info-text">Descripción: {env.description}</p>
+          <p className="info-text">Color: {env.color}</p>
+          <p className="info-text">Estado actual: {env.status}</p>
+          <p className="info-text">
+            Archivo:{" "}
+            {env.url ? (
+              <a href={env.url} target="_blank" rel="noopener noreferrer">
+                Ver archivo
+              </a>
+            ) : (
+              "Sin archivo aún"
+            )}
+          </p>
+        </div>
+      </div>
+    </section>
   );
 };
 
