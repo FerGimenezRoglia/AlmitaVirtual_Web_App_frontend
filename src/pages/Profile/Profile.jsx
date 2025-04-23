@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
+import Button from '../../components/atoms/Button'; //🥶
 import { useNavigate } from 'react-router-dom';
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import { getUsernameFromToken } from '../../utils/jwtUtils';
+
 
 
 const Profile = () => {
@@ -366,7 +368,7 @@ const Profile = () => {
                 />
               </label>
 
-              <button type="submit">Crear Entorno</button>
+              <Button type="submit">Crear Entorno</Button>
             </form>
           </div>
         )}
@@ -459,7 +461,7 @@ const Profile = () => {
                   Si subes un archivo, reemplazará al actual (si existe).
                 </span>
 
-                <button type="submit">Actualizar Entorno</button>
+                <Button type="submit">Actualizar Entorno</Button>
               </form>
             )}
           </div>

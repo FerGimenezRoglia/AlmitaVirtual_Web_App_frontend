@@ -232,6 +232,7 @@ body {
   border-radius: 8px;
 }
 
+/* Cambio en fonfo de boton de formularios*/
 input:-webkit-autofill {
   background-color: #2e2e2e !important;
   -webkit-box-shadow: 0 0 0px 0px #2e2e2e inset !important;

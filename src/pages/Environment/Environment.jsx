@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './Environment.css';
 
 const Environment = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [env, setEnv] = useState(null);
-  const [accessLevel, setAccessLevel] = useState(null); // 🌐 'visitor', 'owner', 'admin', 'unauthorized'
+  const [showOptions, setShowOptions] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const [username, setUsername] = useState('');
 
-
-  // 🧠 [CARGA DE ENTORNO] Detecta si el visitante está logueado o no.
-  // ✅ Detecta si hay token o no para decidir si llamar como visitante o usuario
+  // 🧠 Carga del entorno según token o como visitante
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
     const fetchEnv = async () => {
       try {
-        let response;
+        const token = localStorage.getItem('token');
 
+        if (token) {
+          const tokenData = JSON.parse(atob(token.split('.')[1]));
+          setUserRole(tokenData.role); // Guardamos el rol en el estado
+          setUsername(tokenData.sub); // Guardamos el nombre del usuario logueado
+          console.log("🔍 TOKEN DATA:", tokenData); 
+        }
+
+        let response;
         if (token) {
           console.log("🔐 Llamando a entorno con token...");
           response = await fetch(`http://localhost:8080/environments/${id}`, {
@@ -26,35 +33,12 @@ const Environment = () => {
           });
         } else {
           console.log("🌐 Llamando a entorno público...");
-          console.log(`Endpoint público: http://localhost:8080/public/environments/${id}`);
           response = await fetch(`http://localhost:8080/public/environments/${id}`);
         }
 
         if (response.ok) {
           const data = await response.json();
           setEnv(data);
-
-          // 🧠 Determinar tipo de acceso al entorno.
-          // Este bloque analiza si el visitante es el dueño, un admin o un visitante público
-          if (token) {
-            const tokenData = JSON.parse(atob(token.split('.')[1])); // Decodificamos el JWT
-            const currentUserId = tokenData.id;
-            const currentUserRole = tokenData.role;
-
-            if (currentUserRole === "ROLE_ADMIN") {
-              setAccessLevel("admin"); // 👑 Admin: puede hacer todo
-            } else if (data.userId === currentUserId) {
-              setAccessLevel("owner"); // 👤 Dueño: puede gestionar su propio entorno
-            } else {
-              setAccessLevel("unauthorized"); // ❌ Token inválido para este entorno (por seguridad)
-            }
-
-            console.log("🧪 Nivel de acceso detectado:", currentUserRole);
-          } else {
-            setAccessLevel("visitor"); // 🌐 Visitante público
-            console.log("🧪 Nivel de acceso detectado: visitor");
-          }
-
         } else {
           throw new Error("Error al cargar entorno");
         }
@@ -67,60 +51,88 @@ const Environment = () => {
     fetchEnv();
   }, [id]);
 
-  if (!env) return <p>Cargando...</p>;
+  if (!env) return <p style={{ color: 'white', padding: '2rem' }}>Cargando entorno...</p>;
 
   // 🌟 Devuelve una imagen según el estado
   const renderStateImage = (status) => {
     const statusImages = {
-      IDLE: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/kemhyfrss9gqluvtxiju.png",
-      ACTIVE: "https://res.cloudinary.com/demo/video/upload/v1616519750/active_sample.jpg",
-      REFLECTIVE: "https://res.cloudinary.com/demo/video/upload/v1616519750/reflective_sample.jpg",
-      EXITED: "https://res.cloudinary.com/demo/video/upload/v1616519750/exited_sample.jpg",
-      INSPIRED: "https://res.cloudinary.com/demo/video/upload/v1616519750/inspired_sample.jpg",
+      IDLE: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
+      ACTIVE: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
+      REFLECTIVE: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
+      EXITED: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
+      INSPIRED: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
     };
-
+  
     return (
       <img
         src={statusImages[status] || statusImages["IDLE"]}
         alt={`Estado ${status}`}
-        className="almita-image"
       />
     );
   };
 
   return (
     <section className="profile-wrapper">
-      {/* IZQUIERDA - IMAGEN DEL ESTADO */}
+      {/* 🔹 LADO IZQUIERDO */}
       <div className="left-side">
-        <div className="video-container">
-          <img
-            src="https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/kemhyfrss9gqluvtxiju.png"
-            alt="Estado visual"
-            className="almita-image"
-          />
-        </div>
+        <div className="left-wrapper">
 
-        <div className="title-block">
-          <p className="title">/ ENTORNO</p>
-        </div>
-        <div className="description-block">
-          <p className="description">{env.title.toUpperCase()}</p>
-        </div>
+          {/* 🖼️ Cuadrante visual */}
+          <div className="cuadrante-fijo">
+            {renderStateImage(env.status)}
+          </div>
 
+          {/* 👤 Título del usuario */}
+          <p className="user-title">/ {username || "USUARIO"}</p>
+
+          {/* 📝 Título del entorno */}
+          <p className="env-title">{env.title?.toUpperCase()}</p>
+
+          {/* 🧾 Descripción del entorno */}
+          <div className="description-container">
+            <p className="description-text">
+              {env.description}
+            </p>
+          </div>
+
+          <div className="environment-options-tight">
+            <span className="menu-item" onClick={() => setShowOptions(!showOptions)}>
+              ENTORNO&nbsp;_
+            </span>
+
+            {showOptions && (
+              <>
+                <span className="sub-item" onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert("🔗 Enlace copiado al portapapeles");
+                }}>
+                  &nbsp;COPIAR LINK&nbsp;_
+                </span>
+
+                <span className="sub-item" onClick={() => {
+                  if (userRole === "ROLE_ADMIN") {
+                    navigate("/admin");
+                  } else {
+                    navigate("/profile");
+                  }
+                }}>
+                  &nbsp;EDITAR&nbsp;_
+                </span>
+              </>
+            )}
+          </div>
+
+        </div>
       </div>
 
-      {/* DERECHA - FUTURA INTERFAZ */}
+      {/* 🔸 LADO DERECHO (sin cambios por ahora) */}
       <div className="right-side">
         <div className="info-box">
-          <p className="info-text">Descripción: {env.description}</p>
-          <p className="info-text">Color: {env.color}</p>
-          <p className="info-text">Estado actual: {env.status}</p>
+          <p className="info-text">COLOR: {env.color}</p>
+          <p className="info-text">ESTADO ACTUAL: {env.status}</p>
           <p className="info-text">
-            Archivo:{" "}
-            {env.url ? (
-              <a href={env.url} target="_blank" rel="noopener noreferrer">
-                Ver archivo
-              </a>
+            ARCHIVO: {env.url ? (
+              <a href={env.url} target="_blank" rel="noopener noreferrer">Ver archivo</a>
             ) : (
               "Sin archivo aún"
             )}
@@ -130,5 +142,4 @@ const Environment = () => {
     </section>
   );
 };
-
 export default Environment;

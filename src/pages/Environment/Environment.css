@@ -1,0 +1,144 @@
+.left-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 600px;
+    padding-top: 2rem;
+  }
+
+/* ─────────────────────────────────────
+ 🔲 Cuadrante de animación visual (izquierda arriba)
+────────────────────────────────────── */
+/* 📐 Cuadrante fijo cuadrado */
+.cuadrante-fijo {
+    width: 90vw;
+    max-width: 300px;
+    aspect-ratio: 1 / 1;
+    border: 0.5px solid var(--color-main-1);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    position: relative;
+  }
+  
+  /* 🖼 Imagen dentro: ocupa todo, no se deforma */
+  .cuadrante-fijo img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+/* ─────────────────────────────────────
+ 🧾 Descripción del entorno (parte inferior izquierda)
+────────────────────────────────────── */
+.description-container {
+    max-width: 550px;
+    margin-top: -0.4rem;
+    margin-bottom: 4rem;
+    line-height: 1.6;
+    letter-spacing: 0.8px;
+    color: var(--color-main-2);
+}
+
+.description-text {
+    font-size: 0.95rem;
+    text-align: left;
+    opacity: 1;
+}
+
+/* ─────────────────────────────────────
+ 🧭 Botón "ENTORNO _" y sus subopciones
+────────────────────────────────────── */
+.environment-options {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    min-height: 3.7rem;
+    margin-bottom: 2.5rem; 
+}
+
+.sub-options {
+    display: flex;
+    gap: 1.5rem;
+}
+
+
+.menu-item,
+.sub-item {
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--color-main-2);
+    transition: opacity 0.2s ease-in-out;
+}
+
+.menu-item:hover,
+.sub-item:hover {
+    opacity: 0.8;
+}
+
+.menu-item,
+.sub-item {
+    font-size: 0.95rem;
+}
+
+.environment-options-tight {
+    display: inline;
+    font-weight: 500;
+    color: var(--color-main-2);
+}
+
+.environment-options-tight .menu-item,
+.environment-options-tight .sub-item {
+    cursor: pointer;
+    transition: opacity 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+.environment-options-tight .menu-item:hover,
+.environment-options-tight .sub-item:hover {
+    opacity: 0.8;
+}
+
+/* ─────────────────────────────────────
+ 👤 Título del usuario
+────────────────────────────────────── */
+.user-title {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--color-secondary-1);
+    margin-bottom: 1rem;
+}
+
+/* ─────────────────────────────────────
+ 📝 Título del entorno
+────────────────────────────────────── */
+.env-title {
+    font-size: 0.95rem;
+    font-weight: normal;
+    color: var(--color-main-1);
+    margin-bottom: 1rem;
+    letter-spacing: 1.3px;
+}
+
+  /* 🔲 Espacio entre secciones */
+  .title,
+  .description,
+  .description-container,
+  .environment-options {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* 🔽 Separación del botón ENTORNO del borde inferior */
+  .environment-options {
+    margin-bottom: 2rem;
+  }
+
+  .left-side {
+    padding-bottom: 3rem;
+  }
