@@ -4,7 +4,10 @@
     align-items: flex-start;
     justify-content: flex-start;
     min-height: 600px;
-    padding-top: 2rem;
+    padding-top: 4rem;
+    /* Fijamos altura visible */
+    height: 100vh;
+    overflow-y: auto;
   }
 
 /* ─────────────────────────────────────
@@ -38,7 +41,7 @@
 ────────────────────────────────────── */
 .description-container {
     max-width: 550px;
-    margin-top: -0.4rem;
+    margin-top: -0.7rem;
     margin-bottom: 4rem;
     line-height: 1.6;
     letter-spacing: 0.8px;
@@ -67,7 +70,6 @@
     display: flex;
     gap: 1.5rem;
 }
-
 
 .menu-item,
 .sub-item {
@@ -112,7 +114,7 @@
     font-size: 1rem;
     font-weight: 300;
     color: var(--color-secondary-1);
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 /* ─────────────────────────────────────
@@ -142,3 +144,13 @@
   .left-side {
     padding-bottom: 3rem;
   }
+
+  /* ─────────────────────────────────────
+ 🎯 Contenedor externo del cuadrado (bloqueador de deformación)
+────────────────────────────────────── */
+.cuadrante-wrapper {
+  height: 300px;           /* 🔒 Altura fija del cuadrado */
+  flex-shrink: 0;          /* 🙅‍♂️ Impide que se achique por contenido extra */
+  margin-bottom: 1rem;     /* 📐 Espacio debajo del cuadrado */
+}
+

@@ -10,6 +10,8 @@ const AdminDashboard = () => {
   const [userEnvs, setUserEnvs] = useState([]);
   const [allEnvs, setAllEnvs] = useState([]);
   const [selectedEnvId, setSelectedEnvId] = useState(null);
+  // 🧠 Contador para descripción (crear y editar)
+  const [descriptionLength, setDescriptionLength] = useState(0);
   const [editFormData, setEditFormData] = useState({
     title: '',
     description: '',
@@ -30,7 +32,7 @@ const AdminDashboard = () => {
       alert('❌ Acceso denegado. Esta página es solo para administradores.');
       navigate('/profile');
     }
-  }, []); 
+  }, []);
 
   useEffect(() => {
     if (["ver", "editar", "eliminar"].includes(activeSection)) {
@@ -275,7 +277,7 @@ const AdminDashboard = () => {
 
         {activeSection === "ver" && (
           <div className="info-box">
-            <p className="info-text">TUS ENTORNOS COMO ADMIN _</p>
+            <p className="info-text">TUS ENTORNOS / ADMIN _</p>
             <ul className="env-list">
               {userEnvs.map((env) => (
                 <li key={env.id} className="env-item" onClick={() => navigate(`/environment/${env.id}`)}>
@@ -284,7 +286,7 @@ const AdminDashboard = () => {
               ))}
             </ul>
 
-            <p className="info-text">ENTORNOS DE OTROS USUARIOS _</p>
+            <p className="info-text">LOS ENTORNOS / USUARIOS _</p>
             <ul className="env-list">
               {allEnvs.map((env) => (
                 <li key={env.id} className="env-item" onClick={() => navigate(`/environment/${env.id}`)}>
@@ -307,8 +309,24 @@ const AdminDashboard = () => {
 
               <label>
                 Descripción
-                <input type="text" name="description" placeholder="Breve descripción" maxLength="500" />
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="Breve descripción"
+                  maxLength="300"
+                  onChange={(e) => {
+                    setDescriptionLength(e.target.value.length);
+                  }}
+                />
               </label>
+
+              {/* 👉 Contador de caracteres en vivo */}
+              {descriptionLength > 0 && (
+                <span className="description-counter">
+                  {descriptionLength}/300
+                  {descriptionLength === 300 && " ⚠️ Máximo de caracteres."}
+                </span>
+              )}
 
               <label>
                 Color
@@ -386,11 +404,21 @@ const AdminDashboard = () => {
                   <input
                     type="text"
                     name="description"
-                    value={editFormData.description}
-                    onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                    maxLength="500"
+                    placeholder="Breve descripción"
+                    maxLength="300"
+                    onChange={(e) => {
+                      setDescriptionLength(e.target.value.length);
+                    }}
                   />
                 </label>
+
+                {/* 👉 Contador de caracteres en vivo */}
+                {descriptionLength > 0 && (
+                  <span className="description-counter">
+                    {descriptionLength}/300
+                    {descriptionLength === 300 && " ⚠️ Máximo de caracteres."}
+                  </span>
+                )}
 
                 <label>
                   Color
@@ -432,7 +460,7 @@ const AdminDashboard = () => {
 
         {activeSection === 'eliminar' && (
           <div className="info-box">
-            <p className="info-text">TODOS LOS ENTORNOS _</p>
+            <p className="info-text">TODOS LOS ENTORNOS / ELIMINAR _</p>
             <ul className="env-list">
               {[...userEnvs, ...allEnvs].map((env) => (
                 <li

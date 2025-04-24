@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
-import Button from '../../components/atoms/Button'; //🥶
+import Button from '../../components/atoms/Button';
 import { useNavigate } from 'react-router-dom';
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import { getUsernameFromToken } from '../../utils/jwtUtils';
@@ -24,6 +24,8 @@ const Profile = () => {
   }, []);
 
   const [selectedEnvId, setSelectedEnvId] = useState(null);
+  // 👉 Estado que cuenta cuántos caracteres lleva la descripción
+  const [descriptionLength, setDescriptionLength] = useState(0);
   const [editFormData, setEditFormData] = useState({
     title: '',
     description: '',
@@ -107,6 +109,7 @@ const Profile = () => {
       setCreateError("⚠️ El título es obligatorio!");
       return;
     }
+
     setCreateError(""); // ✅ Limpiamos error si pasa la validación
 
     let fileUrl = ""; // 🌐 inicializamos el link del archivo vacío
@@ -316,7 +319,7 @@ const Profile = () => {
 
         {activeSection === 'ver' && (
           <div className="info-box">
-            <p className="info-text">TUS ENTORNOS CREADOS _</p>
+            <p className="info-text">TUS ENTORNOS / CREADOS _</p>
             <ul className="env-list">
               {userEnvs.map((env) => (
                 <li key={env.id} className="env-item" onClick={() => navigate(`/environment/${env.id}`)}>
@@ -344,8 +347,24 @@ const Profile = () => {
 
               <label>
                 Descripción
-                <input type="text" name="description" placeholder="Breve descripción" maxLength="500" />
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="Breve descripción"
+                  maxLength="300"
+                  onChange={(e) => {
+                    setDescriptionLength(e.target.value.length);
+                  }}
+                />
               </label>
+
+              {/* 👉 Contador de caracteres en vivo */}
+              {descriptionLength > 0 && (
+                <span className="description-counter">
+                  {descriptionLength}/300
+                  {descriptionLength === 300 && " ⚠️ Máximo de caracteres."}
+                </span>
+              )}
 
               <label>
                 Color
@@ -423,11 +442,20 @@ const Profile = () => {
                   <input
                     type="text"
                     name="description"
+                    maxLength="300"
+                    placeholder="Breve descripción"
                     value={editFormData.description}
-                    onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                    maxLength="500"
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      setEditFormData({ ...editFormData, description: input });
+                    }}
                   />
                 </label>
+
+                <span className="description-counter">
+                  {editFormData.description.length}/300
+                  {editFormData.description.length === 300 && ' ⚠️ Máximo de caracteres.'}
+                </span>
 
                 <label>
                   Color
@@ -469,7 +497,7 @@ const Profile = () => {
 
         {activeSection === 'eliminar' && (
           <div className="info-box">
-            <p className="info-text">TUS ENTORNOS A ELIMINAR _</p>
+            <p className="info-text">TUS ENTORNOS / ELIMINAR _</p>
             <ul className="env-list">
               {userEnvs.map((env) => (
                 <li

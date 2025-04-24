@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import AlmitaDisplay from '../../components/AlmitaDisplay';
 import './Environment.css';
 
 const Environment = () => {
@@ -20,7 +21,7 @@ const Environment = () => {
           const tokenData = JSON.parse(atob(token.split('.')[1]));
           setUserRole(tokenData.role); // Guardamos el rol en el estado
           setUsername(tokenData.sub); // Guardamos el nombre del usuario logueado
-          console.log("🔍 TOKEN DATA:", tokenData); 
+          console.log("🔍 TOKEN DATA:", tokenData);
         }
 
         let response;
@@ -53,23 +54,7 @@ const Environment = () => {
 
   if (!env) return <p style={{ color: 'white', padding: '2rem' }}>Cargando entorno...</p>;
 
-  // 🌟 Devuelve una imagen según el estado
-  const renderStateImage = (status) => {
-    const statusImages = {
-      IDLE: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
-      ACTIVE: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
-      REFLECTIVE: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
-      EXITED: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
-      INSPIRED: "https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/cb7ty6radssqtdgkvpod.png",
-    };
-  
-    return (
-      <img
-        src={statusImages[status] || statusImages["IDLE"]}
-        alt={`Estado ${status}`}
-      />
-    );
-  };
+
 
   return (
     <section className="profile-wrapper">
@@ -78,8 +63,10 @@ const Environment = () => {
         <div className="left-wrapper">
 
           {/* 🖼️ Cuadrante visual */}
-          <div className="cuadrante-fijo">
-            {renderStateImage(env.status)}
+          <div className="cuadrante-wrapper">
+            <div className="cuadrante-fijo">
+              <AlmitaDisplay status={env.status} color={env.color} />
+            </div>
           </div>
 
           {/* 👤 Título del usuario */}

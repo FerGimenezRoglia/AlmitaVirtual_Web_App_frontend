@@ -308,3 +308,20 @@ select:focus {
   object-fit: contain;
   border-radius: 8px;
 }
+
+/* 👉 Estilo para contador de caracteres */
+.description-counter {
+  font-size: 0.95rem;
+  color: var(--color-secondary-1);
+  margin-top: 0rem;
+  display: block;
+}
+/* 👉 Estilo para msj de error de título de entorno */
+.error-msg {
+  font-size: 0.95rem;
+  color: var(--color-secondary-1);
+  margin-top: 0rem;
+  margin-bottom: 0rem;
+  display: block;
+  font-weight: 400;
+}
