@@ -125,6 +125,16 @@ const Environment = () => {
           {/* Teclado */}
           <div className="keyboard-wrapper">
             <img src={keyboardImage} alt="Keyboard SVG" className="keyboard-svg" />
+
+            <div className="keyboard-buttons-container">
+              <button className="keyboard-btn" id="btn-upload">Subir Archivo</button>
+              <button className="keyboard-btn" id="btn-delete">Eliminar</button>
+              <button className="keyboard-btn" id="btn-enter">Ver</button>
+              <button className="keyboard-btn" id="btn-settings-top">Me Interesa</button>
+              <button className="keyboard-btn" id="btn-settings-bottom">Me Interesa</button>
+              <button className="keyboard-btn" id="btn-help">Descargar</button>
+
+            </div>
           </div>
 
         </div>
