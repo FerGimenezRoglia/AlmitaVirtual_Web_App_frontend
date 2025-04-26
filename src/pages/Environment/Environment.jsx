@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
+import screenImage from "../../assets/images/screen.svg";
+import keyboardImage from "../../assets/images/keyboard.svg";
 import './Environment.css';
 
 const Environment = () => {
@@ -10,6 +12,8 @@ const Environment = () => {
   const [showOptions, setShowOptions] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [username, setUsername] = useState('');
+  const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
+  const [showCopyLinkModal, setShowCopyLinkModal] = useState(false);
 
   // 🧠 Carga del entorno según token o como visitante
   useEffect(() => {
@@ -54,8 +58,6 @@ const Environment = () => {
 
   if (!env) return <p style={{ color: 'white', padding: '2rem' }}>Cargando entorno...</p>;
 
-
-
   return (
     <section className="profile-wrapper">
       {/* 🔹 LADO IZQUIERDO */}
@@ -91,16 +93,16 @@ const Environment = () => {
               <>
                 <span className="sub-item" onClick={() => {
                   navigator.clipboard.writeText(window.location.href);
-                  alert("🔗 Enlace copiado al portapapeles");
+                  setShowCopyLinkModal(true);
                 }}>
                   &nbsp;COPIAR LINK&nbsp;_
                 </span>
 
                 <span className="sub-item" onClick={() => {
-                  if (userRole === "ROLE_ADMIN") {
-                    navigate("/admin");
+                  if (userRole === "ROLE_ADMIN" || userRole === "ROLE_USER") {
+                    navigate(userRole === "ROLE_ADMIN" ? "/admin" : "/profile");
                   } else {
-                    navigate("/profile");
+                    setShowUnauthorizedModal(true);
                   }
                 }}>
                   &nbsp;EDITAR&nbsp;_
@@ -112,20 +114,44 @@ const Environment = () => {
         </div>
       </div>
 
-      {/* 🔸 LADO DERECHO (sin cambios por ahora) */}
       <div className="right-side">
-        <div className="info-box">
-          <p className="info-text">COLOR: {env.color}</p>
-          <p className="info-text">ESTADO ACTUAL: {env.status}</p>
-          <p className="info-text">
-            ARCHIVO: {env.url ? (
-              <a href={env.url} target="_blank" rel="noopener noreferrer">Ver archivo</a>
-            ) : (
-              "Sin archivo aún"
-            )}
-          </p>
+        <div className="tech-block-wrapper">
+
+          {/* Monitor */}
+          <div className="screen-wrapper">
+            <img src={screenImage} alt="Monitor SVG" className="monitor-svg" />
+          </div>
+
+          {/* Teclado */}
+          <div className="keyboard-wrapper">
+            <img src={keyboardImage} alt="Keyboard SVG" className="keyboard-svg" />
+          </div>
+
         </div>
       </div>
+
+      {showUnauthorizedModal && (
+        <div className="custom-modal">
+          <div className="custom-modal-content">
+            <p>⚠️ No tienes permisos para editar este entorno.</p>
+            <div className="custom-modal-buttons">
+              <button onClick={() => setShowUnauthorizedModal(false)}>Cerrar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCopyLinkModal && (
+        <div className="custom-modal">
+          <div className="custom-modal-content">
+            <p>🔗 Copiado. Enlace listo para compartir.</p>
+            <div className="custom-modal-buttons">
+              <button onClick={() => setShowCopyLinkModal(false)}>Aceptar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 };

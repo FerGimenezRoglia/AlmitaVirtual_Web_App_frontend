@@ -89,7 +89,7 @@ const Welcome = () => {
         {activeSection === 'info' && (
           <div className="info-box">
             <div className="info-text">
-              <p>"Almita Virtual" es una App web donde cada usuario puede crear entornos personalizados para presentar o compartir sus documentos importantes, como el Currículum Vitae o carta de presentación.</p>
+              <p><span className="highlighted-section">"Almita Virtual" </span>es una App web donde cada usuario puede crear entornos personalizados para presentar o compartir sus documentos importantes, como el Currículum Vitae o carta de presentación.</p>
               <p>Cada entorno está representado por un personaje "Almita" que cambia de estado según la interacción del usuario o visitante. La propuesta combina solidez técnica con una experiencia estética sensible y simbólica.</p>
             </div>
           </div>

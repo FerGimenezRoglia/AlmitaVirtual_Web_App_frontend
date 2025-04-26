@@ -91,11 +91,15 @@
   color: var(--color-secondary-1);
   text-align: left;
 }
+/* 🔩 Color para palabras / CREADOS _ o / ELIMINAR _*/
+.highlighted-section {
+  color: var(--color-main-1); 
+}
 
-/* 🧭 POSICIÓN EXACTA SOLO PARA ESTADO */
+/* 🔩 POSICIÓN EXACTA SOLO PARA [ESTADO] */
 .estado-item {
   margin-top: 4.25rem;
-  /* ← Ajustá esto solo para dejarlo EXACTAMENTE como en Welcome */
+  /* ← Ajusta solo para dejarlo EXACTAMENTE como en Welcome */
   margin-bottom: 1rem;
 }
 
@@ -153,12 +157,14 @@ select:focus {
 }
 
 /* 🎯 Solo para la sección EDITAR */
-
 .edit-label {
-  color: var(--color-secondary-1) !important;
-  font-size: 0.95rem !important;
-  display: block;
-  text-transform: none !important; /* Forzamos que no esté en mayúsculas */
+  color: var(--color-secondary-1);
+  font-size: 0.95rem;
+  display: inline-block;
+  text-transform: none;
+  white-space: nowrap;
+  margin-top: 0 !important;
+  margin-bottom:  0rem; /* o el espacio que quieras debajo */
 }
 
 .edit-select {

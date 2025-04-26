@@ -1,4 +1,3 @@
-// cloudinaryUpload.js
 
 export async function uploadFileToCloudinary(file) {
     const cloudName = "dwk4mvgtp";

@@ -277,7 +277,9 @@ const AdminDashboard = () => {
 
         {activeSection === "ver" && (
           <div className="info-box">
-            <p className="info-text">TUS ENTORNOS / ADMIN _</p>
+            <p className="info-text">
+              TUS ENTORNOS <span className="highlighted-section">/ ADMIN _</span>
+            </p>
             <ul className="env-list">
               {userEnvs.map((env) => (
                 <li key={env.id} className="env-item" onClick={() => navigate(`/environment/${env.id}`)}>
@@ -286,7 +288,9 @@ const AdminDashboard = () => {
               ))}
             </ul>
 
-            <p className="info-text">LOS ENTORNOS / USUARIOS _</p>
+            <p className="info-text">
+              LOS ENTORNOS <span className="highlighted-section">/ USUARIOS _</span>
+            </p>
             <ul className="env-list">
               {allEnvs.map((env) => (
                 <li key={env.id} className="env-item" onClick={() => navigate(`/environment/${env.id}`)}>
@@ -358,29 +362,30 @@ const AdminDashboard = () => {
           <div className="info-box">
             {!selectedEnvId ? (
               <form className="form-box">
-                <label className="edit-label">
-                  Selecciona el entorno a editar _
-                  <select
-                    className="edit-select"
-                    name="environment"
-                    onChange={(e) => {
-                      const selectedId = e.target.value;
-                      const selected = [...userEnvs, ...allEnvs].find(env => env.id.toString() === selectedId);
-                      setSelectedEnvId(selectedId);
-                      setEditFormData({
-                        title: selected?.title || '',
-                        description: selected?.description || '',
-                        color: selected?.color || 'NEUTRAL',
-                        url: selected?.url || ''
-                      });
-                    }}
-                  >
-                    <option value="">Seleccionar _</option>
-                    {[...userEnvs, ...allEnvs].map(env => (
-                      <option key={env.id} value={env.id}>{env.title}</option>
-                    ))}
-                  </select>
-                </label>
+                <p className="edit-label">
+                  TODOS LOS ENTORNOS <span className="highlighted-section">/ EDITAR _</span>
+                </p>
+
+                <select
+                  className="edit-select"
+                  name="environment"
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    const selected = [...userEnvs, ...allEnvs].find(env => env.id.toString() === selectedId);
+                    setSelectedEnvId(selectedId);
+                    setEditFormData({
+                      title: selected?.title || '',
+                      description: selected?.description || '',
+                      color: selected?.color || 'NEUTRAL',
+                      url: selected?.url || ''
+                    });
+                  }}
+                >
+                  <option value="">seleccionar _</option>
+                  {[...userEnvs, ...allEnvs].map(env => (
+                    <option key={env.id} value={env.id}>{env.title}</option>
+                  ))}
+                </select>
               </form>
             ) : (
               <form className="form-box" onSubmit={handleUpdateEnvironment}>
@@ -460,7 +465,9 @@ const AdminDashboard = () => {
 
         {activeSection === 'eliminar' && (
           <div className="info-box">
-            <p className="info-text">TODOS LOS ENTORNOS / ELIMINAR _</p>
+            <p className="info-text">
+              TODOS LOS ENTORNOS <span className="highlighted-section">/ ELIMINAR _</span>
+            </p>
             <ul className="env-list">
               {[...userEnvs, ...allEnvs].map((env) => (
                 <li

@@ -16,7 +16,7 @@
 /* 📐 Cuadrante fijo cuadrado */
 .cuadrante-fijo {
     width: 90vw;
-    max-width: 300px;
+    max-width: 280px; /* 🟥 */
     aspect-ratio: 1 / 1;
     border: 0.5px solid var(--color-main-1);
     border-radius: 8px;
@@ -154,3 +154,50 @@
   margin-bottom: 1rem;     /* 📐 Espacio debajo del cuadrado */
 }
 
+  /* ─────────────────────────────────────
+ 🎯 LADO DERECHO
+────────────────────────────────────── */
+.right-side {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 📌 Importante para alinear a la izquierda */
+  justify-content: flex-start;
+  padding: 4rem;
+  margin-top: 0rem;
+}
+
+.tech-block-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrado como bloque */
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 700px;
+  margin-top: 0rem;
+  gap: 0rem; /* Espaciado razonable entre monitor, cable, teclado */
+}
+
+/* MONITOR */
+.screen-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.monitor-svg {
+  width: 496px;
+  height: auto;
+}
+
+/* TECLADO */
+.keyboard-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.keyboard-svg {
+  width: 500px;
+  height: auto;
+}

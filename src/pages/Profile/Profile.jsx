@@ -319,7 +319,9 @@ const Profile = () => {
 
         {activeSection === 'ver' && (
           <div className="info-box">
-            <p className="info-text">TUS ENTORNOS / CREADOS _</p>
+            <p className="info-text">
+              TUS ENTORNOS <span className="highlighted-section">/ CREADOS _</span>
+            </p>
             <ul className="env-list">
               {userEnvs.map((env) => (
                 <li key={env.id} className="env-item" onClick={() => navigate(`/environment/${env.id}`)}>
@@ -396,8 +398,11 @@ const Profile = () => {
           <div className="info-box">
             {!selectedEnvId ? (
               <form className="form-box">
-                <label className="edit-label">
-                  Selecciona el entorno a editar _
+                <p className="edit-label">
+                  TUS ENTORNOS <span className="highlighted-section">/ EDITAR _</span>
+                </p>
+
+                <label>
                   <select
                     className="edit-select"
                     name="environment"
@@ -413,7 +418,7 @@ const Profile = () => {
                       });
                     }}
                   >
-                    <option value="">Seleccionar _</option>
+                    <option value="">seleccionar _</option>
                     {userEnvs.map(env => (
                       <option key={env.id} value={env.id}>{env.title}</option>
                     ))}
@@ -497,7 +502,9 @@ const Profile = () => {
 
         {activeSection === 'eliminar' && (
           <div className="info-box">
-            <p className="info-text">TUS ENTORNOS / ELIMINAR _</p>
+            <p className="info-text">
+              TUS ENTORNOS <span className="highlighted-section">/ ELIMINAR _</span>
+            </p>
             <ul className="env-list">
               {userEnvs.map((env) => (
                 <li
