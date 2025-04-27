@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AlmitaDisplay from '../../components/AlmitaDisplay';
 import './Welcome.css';
 
 // 🔍 Decodifica el token para extraer el nombre de usuario
@@ -236,13 +237,9 @@ const Welcome = () => {
           </div>
         )}
 
-        {/* 🎨 BLOQUE VISUAL: ALMITA */}
         {activeSection === 'hola' && (
           <div className="info-box">
-            <img
-              src="https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/kemhyfrss9gqluvtxiju.png"
-              className="almita-image"
-            />
+            <AlmitaDisplay status="ACTIVE" color="YELLOW" />
           </div>
         )}
       </div>

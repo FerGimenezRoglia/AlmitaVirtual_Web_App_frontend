@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import { getUsernameFromToken } from '../../utils/jwtUtils';
+import AlmitaDisplay from '../../components/AlmitaDisplay';
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState(null);
@@ -483,25 +484,10 @@ const AdminDashboard = () => {
         )}
 
         {activeSection === 'estado' && (
-          <div className="info-box">
-            {/* Solo cambiás esta línea para imagen o video, y no tocás nada más */}
-            <img
-              src="https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/kemhyfrss9gqluvtxiju.png"
-              className="almita-image"
-            />
-            {/*
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="almita-image"
-    >
-      <source src="TU_URL_VIDEO_CLOUDINARY" type="video/mp4" />
-    </video>
-    */}
-          </div>
-        )}
+           <div className="info-box">
+           <AlmitaDisplay status="ACTIVE" color="BLUE" />
+         </div>
+       )}
 
       </div>
       {confirmDeleteId && (

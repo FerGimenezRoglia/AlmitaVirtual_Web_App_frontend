@@ -8,12 +8,35 @@ import './Environment.css';
 const Environment = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [env, setEnv] = useState(null);
   const [showOptions, setShowOptions] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [username, setUsername] = useState('');
   const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
   const [showCopyLinkModal, setShowCopyLinkModal] = useState(false);
+  // 🎯 Estado para guardar el archivo seleccionado
+  const [selectedFile, setSelectedFile] = useState(null); // 🎾
+  // 🎨 Devuelve el color del texto del monitor según el entorno
+  const getMonitorTextColor = () => {
+    switch (env.color) {
+      case "GREEN":
+        return "#88BA74";
+      case "RED":
+        return "#D17D84";
+      case "BLUE":
+        return "#586ADB";
+      case "YELLOW":
+        return "#E0D08D";
+      case "NEUTRAL":
+        return "#AAA8A1";
+      default:
+        return "#ffffff"; // Blanco por defecto
+    }
+  };
+
+  const [showPopup, setShowPopup] = useState(false); // 🎾
+  const [popupText, setPopupText] = useState(''); // 🎾
 
   // 🧠 Carga del entorno según token o como visitante
   useEffect(() => {
@@ -55,6 +78,20 @@ const Environment = () => {
 
     fetchEnv();
   }, [id]);
+
+  // 🎯 Función para capturar el archivo que el usuario selecciona // 🎾
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+
+      if (allowedTypes.includes(file.type)) {
+        setSelectedFile(file);
+      } else {
+        alert('❌ Tipo de archivo no permitido. Sube solo PDF, JPG o PNG.');
+      }
+    }
+  };
 
   if (!env) return <p style={{ color: 'white', padding: '2rem' }}>Cargando entorno...</p>;
 
@@ -114,12 +151,30 @@ const Environment = () => {
         </div>
       </div>
 
+      {/* 🔹 LADO DERECHO */}
       <div className="right-side">
         <div className="tech-block-wrapper">
 
           {/* Monitor */}
           <div className="screen-wrapper">
             <img src={screenImage} alt="Monitor SVG" className="monitor-svg" />
+
+            {/* Contenedor del texto del monitor */}
+            <div className="monitor-text-wrapper">
+              <div className="monitor-text" style={{ color: getMonitorTextColor(env.color) }}>
+                {(env.status === "ACTIVE" || env.status === "EXCITED" || env.status === "INSPIRED")
+                  ? "SI / Archivo _"
+                  : "NO / Archivo _"}
+              </div>
+            </div>
+
+            {/* Popup si corresponde */}
+            {showPopup && (
+              <div className="popup-overlay">
+                <p>{popupText}</p>
+                <button onClick={() => setShowPopup(false)}>Aceptar</button>
+              </div>
+            )}
           </div>
 
           {/* Teclado */}
@@ -127,13 +182,27 @@ const Environment = () => {
             <img src={keyboardImage} alt="Keyboard SVG" className="keyboard-svg" />
 
             <div className="keyboard-buttons-container">
-              <button className="keyboard-btn" id="btn-upload">Subir Archivo</button>
+              <button
+                className="keyboard-btn"
+                id="btn-upload"
+                onClick={() => document.getElementById('fileInput').click()}
+              >
+                Subir Archivo
+              </button>
               <button className="keyboard-btn" id="btn-delete">Eliminar</button>
               <button className="keyboard-btn" id="btn-enter">Ver</button>
               <button className="keyboard-btn" id="btn-settings-top">Me Interesa</button>
               <button className="keyboard-btn" id="btn-settings-bottom">Me Interesa</button>
               <button className="keyboard-btn" id="btn-help">Descargar</button>
 
+              {/* 📄 Input invisible 🎾 */}
+              <input
+                type="file"
+                id="fileInput"
+                style={{ display: 'none' }}
+                accept=".pdf, .jpg, .jpeg, .png"
+                onChange={handleFileChange}
+              />
             </div>
           </div>
 

@@ -187,9 +187,34 @@
 
 /* MONITOR */
 .screen-wrapper {
+  position: relative; 
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* ─────────────────────────────────────
+ 🎯 TEXTO VISIBLE EN EL MONITOR
+────────────────────────────────────── */
+.monitor-text-wrapper {
+  position: absolute;
+  top: 19px;
+  left: 19px;
+  width: 247.8px;
+  height: 205.3px;
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  text-align: center; 
+  pointer-events: none;
+}
+
+/* ✏️ Texto interno */
+.monitor-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 1rem;
+  color: var(--color-main-1); /* Este se cambia dinámico con el entorno */
+  opacity: 0.9;
 }
 
 .monitor-svg {
@@ -282,9 +307,11 @@
 /* 📌 Me Interesa (superior) */
 #btn-settings-top {
   left: 388.5px;
-  top: 154.6px; /* 🟰 Subimos para que empiece más arriba */
+  top: 154.6px;
+  /* 🟰 Subimos para que empiece más arriba */
   width: 72.9px;
-  height: 99.3px; /* 🟰 Abarcamos la suma del botón superior + botón inferior */
+  height: 99.3px;
+  /* 🟰 Abarcamos la suma del botón superior + botón inferior */
   opacity: 0;
   background: transparent;
   border: none;
@@ -302,14 +329,28 @@
 
 }
 
-.keyboard-btn:hover{
+.keyboard-btn:hover {
   color: var(--color-main-1);
   /* Cambia a cremita al pasar */
   opacity: 1;
   /* Opcional: máxima opacidad al hacer hover */
 }
 
-#btn-settings-top:hover + #btn-settings-bottom {
+#btn-settings-top:hover+#btn-settings-bottom {
   color: var(--color-main-1);
   opacity: 1;
+}
+
+/* Popup de mensajes */
+.popup-overlay {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  z-index: 10;
 }

@@ -4,6 +4,7 @@ import Button from '../../components/atoms/Button';
 import { useNavigate } from 'react-router-dom';
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import { getUsernameFromToken } from '../../utils/jwtUtils';
+import AlmitaDisplay from '../../components/AlmitaDisplay';
 
 
 
@@ -521,22 +522,7 @@ const Profile = () => {
 
         {activeSection === 'estado' && (
           <div className="info-box">
-            {/* Solo cambiás esta línea para imagen o video, y no tocás nada más */}
-            <img
-              src="https://res.cloudinary.com/dwk4mvgtp/image/upload/v1745100072/kemhyfrss9gqluvtxiju.png"
-              className="almita-image"
-            />
-            {/*
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="almita-image"
-    >
-      <source src="TU_URL_VIDEO_CLOUDINARY" type="video/mp4" />
-    </video>
-    */}
+            <AlmitaDisplay status="ACTIVE" color="NEUTRAL" />
           </div>
         )}
 
