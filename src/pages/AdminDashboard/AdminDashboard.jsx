@@ -11,7 +11,7 @@ const AdminDashboard = () => {
   const [userEnvs, setUserEnvs] = useState([]);
   const [allEnvs, setAllEnvs] = useState([]);
   const [selectedEnvId, setSelectedEnvId] = useState(null);
-  // 🧠 Contador para descripción (crear y editar)
+  // Contador para descripción (crear y editar)
   const [descriptionLength, setDescriptionLength] = useState(0);
   const [editFormData, setEditFormData] = useState({
     title: '',

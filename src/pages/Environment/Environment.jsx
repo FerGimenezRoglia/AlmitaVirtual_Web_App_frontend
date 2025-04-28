@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
 import screenImage from "../../assets/images/screen.svg";
 import keyboardImage from "../../assets/images/keyboard.svg";
+import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import './Environment.css';
 
 const Environment = () => {
@@ -17,6 +18,9 @@ const Environment = () => {
   const [showCopyLinkModal, setShowCopyLinkModal] = useState(false);
   // 🎯 Estado para guardar el archivo seleccionado
   const [selectedFile, setSelectedFile] = useState(null); // 🎾
+  const [showPopup, setShowPopup] = useState(false); // 🎾
+  const [popupText, setPopupText] = useState(''); // 🎾
+
   // 🎨 Devuelve el color del texto del monitor según el entorno
   const getMonitorTextColor = () => {
     switch (env.color) {
@@ -34,9 +38,6 @@ const Environment = () => {
         return "#ffffff"; // Blanco por defecto
     }
   };
-
-  const [showPopup, setShowPopup] = useState(false); // 🎾
-  const [popupText, setPopupText] = useState(''); // 🎾
 
   // 🧠 Carga del entorno según token o como visitante
   useEffect(() => {
@@ -78,20 +79,6 @@ const Environment = () => {
 
     fetchEnv();
   }, [id]);
-
-  // 🎯 Función para capturar el archivo que el usuario selecciona // 🎾
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-
-      if (allowedTypes.includes(file.type)) {
-        setSelectedFile(file);
-      } else {
-        alert('❌ Tipo de archivo no permitido. Sube solo PDF, JPG o PNG.');
-      }
-    }
-  };
 
   if (!env) return <p style={{ color: 'white', padding: '2rem' }}>Cargando entorno...</p>;
 
@@ -185,7 +172,6 @@ const Environment = () => {
               <button
                 className="keyboard-btn"
                 id="btn-upload"
-                onClick={() => document.getElementById('fileInput').click()}
               >
                 Subir Archivo
               </button>
@@ -201,7 +187,6 @@ const Environment = () => {
                 id="fileInput"
                 style={{ display: 'none' }}
                 accept=".pdf, .jpg, .jpeg, .png"
-                onChange={handleFileChange}
               />
             </div>
           </div>
