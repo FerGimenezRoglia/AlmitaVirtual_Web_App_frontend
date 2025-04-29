@@ -522,7 +522,7 @@ const Profile = () => {
 
         {activeSection === 'estado' && (
           <div className="info-box">
-            <AlmitaDisplay status="ACTIVE" color="NEUTRAL" />
+            <AlmitaDisplay status="ACTIVE" color="BLUE" />
           </div>
         )}
 

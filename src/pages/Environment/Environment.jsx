@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
 import screenImage from "../../assets/images/screen.svg";
@@ -16,10 +16,13 @@ const Environment = () => {
   const [username, setUsername] = useState('');
   const [showUnauthorizedModal, setShowUnauthorizedModal] = useState(false);
   const [showCopyLinkModal, setShowCopyLinkModal] = useState(false);
-  // 🎯 Estado para guardar el archivo seleccionado
-  const [selectedFile, setSelectedFile] = useState(null); // 🎾
-  const [showPopup, setShowPopup] = useState(false); // 🎾
-  const [popupText, setPopupText] = useState(''); // 🎾
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupText, setPopupText] = useState('');
+  const [showMonitorPopup, setShowMonitorPopup] = useState(false);
+  const [monitorPopupText, setMonitorPopupText] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // 🥎
+  const [showDeleteUnauthorized, setShowDeleteUnauthorized] = useState(false); // 🥎
+  const fileInputRef = useRef(null); // Referencia para el input file
 
   // 🎨 Devuelve el color del texto del monitor según el entorno
   const getMonitorTextColor = () => {
@@ -79,6 +82,126 @@ const Environment = () => {
 
     fetchEnv();
   }, [id]);
+
+  // 🎯 Función que verifica si el usuario tiene permisos para acciones especiales 
+  const hasPermission = () => {
+    return userRole === "ROLE_ADMIN" || userRole === "ROLE_USER";
+  };
+
+  // 📄 Función que maneja la subida de archivo 
+  const handleUploadFile = () => {
+    if (!hasPermission()) {
+      setMonitorPopupText("⚠️ No puedes Subir archivos.");
+      setShowMonitorPopup(true);
+      return;
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // 📄 Función que maneja el cambio de archivo seleccionado 
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+
+    if (!file) {
+      console.log("⚠️ No se seleccionó ningún archivo.");
+      return;
+    }
+
+    // ✅ Validar tipo de archivo
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      setPopupText("⚠️ Solo se permiten archivos PDF, JPG o PNG.");
+      setShowPopup(true);
+      return;
+    }
+
+    try {
+      const uploadedUrl = await uploadFileToCloudinary(file);
+
+      if (!uploadedUrl) {
+        setPopupText("❌ Error al subir el archivo. Inténtalo de nuevo.");
+        setShowPopup(true);
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8080/environments/${id}/file`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${token}`,
+        },
+        body: new URLSearchParams({ fileUrl: uploadedUrl }),
+      });
+
+      if (response.ok) {
+        const updatedEnv = await response.json();
+        setEnv(updatedEnv);
+        setPopupText("✔️ Archivo subido correctamente.");
+        setShowPopup(true);
+      } else {
+        const errorText = await response.text();
+        setPopupText(`❌ Error al registrar archivo: ${errorText}`);
+        setShowPopup(true);
+      }
+    } catch (error) {
+      console.error("❌ Error inesperado al subir archivo:", error);
+      setPopupText("❌ Error inesperado. Inténtalo más tarde.");
+      setShowPopup(true);
+    }
+  };
+
+  // 📄 Función que maneja el clic en el botón "Eliminar" 🥎
+  const handleDeleteFileClick = () => {
+    if (!hasPermission()) {
+      setMonitorPopupText("⚠️ No puedes eliminar archivos.");
+      setShowMonitorPopup(true);
+      return;
+    }
+
+    if (!env.url) {
+      setMonitorPopupText("⚠️ No hay archivo para eliminar.");
+      setShowMonitorPopup(true);
+      return;
+    }
+
+    // Si tiene permiso y hay archivo, preguntamos confirmación
+    setShowDeleteConfirm(true);
+  };
+
+  // 📄 Función que elimina el archivo del entorno 🥎
+  const handleConfirmDeleteFile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`http://localhost:8080/environments/${id}/file`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const updatedEnv = await response.json();
+        setEnv(updatedEnv);
+        setPopupText("✔️ Archivo eliminado correctamente.");
+        setShowPopup(true);
+      } else {
+        const errorText = await response.text();
+        setPopupText(`❌ Error al eliminar archivo: ${errorText}`);
+        setShowPopup(true);
+      }
+    } catch (error) {
+      console.error("❌ Error inesperado al eliminar archivo:", error);
+      setPopupText("❌ Error inesperado. Inténtalo más tarde.");
+      setShowPopup(true);
+    } finally {
+      setShowDeleteConfirm(false); // Cerramos confirmación siempre
+    }
+  };
 
   if (!env) return <p style={{ color: 'white', padding: '2rem' }}>Cargando entorno...</p>;
 
@@ -155,13 +278,51 @@ const Environment = () => {
               </div>
             </div>
 
-            {/* Popup si corresponde */}
+            {/* Popup nuevo dentro del monitor */}
             {showPopup && (
-              <div className="popup-overlay">
-                <p>{popupText}</p>
-                <button onClick={() => setShowPopup(false)}>Aceptar</button>
+              <div className="popup-inside-monitor">
+                <p className="popup-content">{popupText}</p>
+                <button
+                  className="popup-content-button"
+                  onClick={() => setShowPopup(false)}
+                >
+                  Aceptar
+                </button>
               </div>
             )}
+            {/* Popup para errores de visitante sin permisos */}
+            {showMonitorPopup && (
+              <div className="popup-inside-monitor">
+                <p className="popup-content">{monitorPopupText}</p>
+                <button
+                  className="popup-content-button"
+                  onClick={() => setShowMonitorPopup(false)}
+                >
+                  Aceptar
+                </button>
+              </div>
+            )}
+            {/* Popup para confirmar eliminar archivo */}
+            {showDeleteConfirm && (
+              <div className="popup-inside-monitor">
+                <p className="popup-content">¿Deseas Eliminar el Archivo?</p>
+                <div className="popup-button-row">
+                  <button
+                    className="popup-content-button popup-content-button-red"
+                    onClick={handleConfirmDeleteFile}
+                  >
+                    Eliminar
+                  </button>
+                  <button
+                    className="popup-content-button"
+                    onClick={() => setShowDeleteConfirm(false)}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
 
           {/* Teclado */}
@@ -169,25 +330,33 @@ const Environment = () => {
             <img src={keyboardImage} alt="Keyboard SVG" className="keyboard-svg" />
 
             <div className="keyboard-buttons-container">
+
               <button
                 className="keyboard-btn"
                 id="btn-upload"
+                onClick={handleUploadFile}
               >
                 Subir Archivo
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  accept=".pdf, .jpg, .jpeg, .png"
+                  onChange={handleFileChange}
+                />
               </button>
-              <button className="keyboard-btn" id="btn-delete">Eliminar</button>
+              <button
+                className="keyboard-btn"
+                id="btn-delete"
+                onClick={handleDeleteFileClick}
+              >
+                Eliminar
+              </button>
               <button className="keyboard-btn" id="btn-enter">Ver</button>
               <button className="keyboard-btn" id="btn-settings-top">Me Interesa</button>
               <button className="keyboard-btn" id="btn-settings-bottom">Me Interesa</button>
               <button className="keyboard-btn" id="btn-help">Descargar</button>
 
-              {/* 📄 Input invisible 🎾 */}
-              <input
-                type="file"
-                id="fileInput"
-                style={{ display: 'none' }}
-                accept=".pdf, .jpg, .jpeg, .png"
-              />
             </div>
           </div>
 
@@ -208,7 +377,7 @@ const Environment = () => {
       {showCopyLinkModal && (
         <div className="custom-modal">
           <div className="custom-modal-content">
-            <p>🔗 Copiado. Enlace listo para compartir.</p>
+            <p>✔️ Copiado. Enlace listo para compartir.</p>
             <div className="custom-modal-buttons">
               <button onClick={() => setShowCopyLinkModal(false)}>Aceptar</button>
             </div>

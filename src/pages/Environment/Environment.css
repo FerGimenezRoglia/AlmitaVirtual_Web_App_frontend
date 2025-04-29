@@ -341,16 +341,83 @@
   opacity: 1;
 }
 
-/* Popup de mensajes */
-.popup-overlay {
+/* ─────────────────────────────────────
+ 🎯 Popup dentro del monitor
+────────────────────────────────────── */
+.popup-inside-monitor {
   position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 1rem;
-  border-radius: 10px;
+  top: 19.5px;
+  left: 28.5px;
+  width: 231.4px;
+  height: 201px;
+  background-color: #161616; /* Fondo igual al modal de eliminación */
+  border-radius: 9px;
+  padding: 1.2rem 1rem;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Contenido del mensaje */
+.popup-content {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--color-main-1); 
   text-align: center;
-  z-index: 10;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+}
+
+/* Botón ACEPTAR */
+.popup-content-button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  background-color: transparent;
+  border: 1px solid var(--color-main-1);
+  color: var(--color-main-1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.popup-content-button:hover {
+  background-color: var(--color-main-1);
+  color: #000;
+}
+
+/* 🔴 Botón rojo específico para eliminar */
+.popup-content-button-red {
+  background-color: #622323; /* Rojo fuerte */
+  color: #aaa8a1;
+  border: none;
+}
+
+.popup-content-button-red:hover {
+  background-color: #626262;
+  color: #aaa8a1;
+}
+
+/* 🎯 Botones en línea para popup de confirmación */
+.popup-button-row {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: center;
+  margin-top: 0rem;
+}
+
+/* ─────────────────────────────────────
+ 🎯 QUITA el efecto neón azul a los botones, no está el botón Me Interesa.
+────────────────────────────────────── */
+#btn-upload:focus,
+#btn-delete:focus,
+#btn-enter:focus,
+#btn-help:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--color-main-1);
 }

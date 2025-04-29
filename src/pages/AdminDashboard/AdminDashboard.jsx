@@ -130,7 +130,7 @@ const AdminDashboard = () => {
 
       if (response.status === 201) {
         const data = await response.json();
-        alert("🟢 Entorno creado con éxito");
+        alert("☑️ Entorno creado con éxito");
         navigate(`/environment/${data.id}`);
       } else {
         const errorText = await response.text();
