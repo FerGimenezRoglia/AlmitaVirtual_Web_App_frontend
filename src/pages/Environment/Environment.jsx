@@ -9,7 +9,7 @@ import './Environment.css';
 const Environment = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const fileInputRef = useRef(null);
   const [env, setEnv] = useState(null);
   const [showOptions, setShowOptions] = useState(false);
   const [userRole, setUserRole] = useState(null);
@@ -20,11 +20,16 @@ const Environment = () => {
   const [popupText, setPopupText] = useState('');
   const [showMonitorPopup, setShowMonitorPopup] = useState(false);
   const [monitorPopupText, setMonitorPopupText] = useState("");
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // 🥎
-  const [showDeleteUnauthorized, setShowDeleteUnauthorized] = useState(false); // 🥎
-  const fileInputRef = useRef(null); // Referencia para el input file
-
-  // 🎨 Devuelve el color del texto del monitor según el entorno
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isInterestPopup, setIsInterestPopup] = useState(false);
+  const interestPhrases = [
+    '"Este gesto ya significa mucho. Gracias, de verdad."',
+    '"Tu interés no pasa desapercibido. Gracias por estar."',
+    '“Una linda señal para mi. Gracias, me motiva."',
+    '"Hay interacciones que inspiran. Esta fue una. Gracias por eso.”',
+    '“Abrazo de Almita. !Muchas gracias!”',
+  ];
+  const [phraseIndex, setPhraseIndex] = useState(0);
   const getMonitorTextColor = () => {
     switch (env.color) {
       case "GREEN":
@@ -82,6 +87,27 @@ const Environment = () => {
 
     fetchEnv();
   }, [id]);
+
+  // 🔁 Cambiar frase cada 5 minutos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhraseIndex(prev => {
+        const nextIndex = (prev + 1) % interestPhrases.length;
+        setPopupText(interestPhrases[nextIndex]);
+        setIsInterestPopup(true);
+        setShowPopup(true);
+
+        setTimeout(() => {
+          setShowPopup(false);
+          setIsInterestPopup(false);
+        }, 5000);
+
+        return nextIndex;
+      });
+    }, 300000); // 5 minutos
+
+    return () => clearInterval(interval);
+  }, []);
 
   // 🎯 Función que verifica si el usuario tiene permisos para acciones especiales 
   const hasPermission = () => {
@@ -154,7 +180,7 @@ const Environment = () => {
     }
   };
 
-  // 📄 Función que maneja el clic en el botón "Eliminar" 🥎
+  // 📄 Función que maneja el clic en el botón "Eliminar" 
   const handleDeleteFileClick = () => {
     if (!hasPermission()) {
       setMonitorPopupText("⚠️ No puedes eliminar archivos.");
@@ -172,7 +198,7 @@ const Environment = () => {
     setShowDeleteConfirm(true);
   };
 
-  // 📄 Función que elimina el archivo del entorno 🥎
+  // 📄 Función que elimina el archivo del entorno 
   const handleConfirmDeleteFile = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -200,6 +226,38 @@ const Environment = () => {
       setShowPopup(true);
     } finally {
       setShowDeleteConfirm(false); // Cerramos confirmación siempre
+    }
+  };
+
+  // 🎯 Función que maneja el click en "Me Interesa"
+  const handleInterestClick = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/public/environments/${id}/status`, {
+        method: "PATCH",
+      });
+
+      if (response.ok) {
+        const updatedEnv = await response.json();
+        setEnv(updatedEnv);
+
+        // ✅ Mostrar frase correspondiente
+        setPopupText(interestPhrases[phraseIndex]);
+        setIsInterestPopup(true); // ✅ Activamos modo “sin botón”
+        setShowPopup(true);
+        // ✅ Ocultar después de 5 segundos
+        setTimeout(() => {
+          setShowPopup(false);
+          setIsInterestPopup(false); // 🧼 Limpiamos la bandera
+        }, 5000);
+
+      } else {
+        setPopupText("❌ Error al registrar tu interés.");
+        setShowPopup(true);
+      }
+    } catch (error) {
+      console.error("❌ Error inesperado:", error);
+      setPopupText("❌ Error inesperado. Inténtalo más tarde.");
+      setShowPopup(true);
     }
   };
 
@@ -282,12 +340,14 @@ const Environment = () => {
             {showPopup && (
               <div className="popup-inside-monitor">
                 <p className="popup-content">{popupText}</p>
-                <button
-                  className="popup-content-button"
-                  onClick={() => setShowPopup(false)}
-                >
-                  Aceptar
-                </button>
+                {!isInterestPopup && (
+                  <button
+                    className="popup-content-button"
+                    onClick={() => setShowPopup(false)}
+                  >
+                    Aceptar
+                  </button>
+                )}
               </div>
             )}
             {/* Popup para errores de visitante sin permisos */}
@@ -353,8 +413,20 @@ const Environment = () => {
                 Eliminar
               </button>
               <button className="keyboard-btn" id="btn-enter">Ver</button>
-              <button className="keyboard-btn" id="btn-settings-top">Me Interesa</button>
-              <button className="keyboard-btn" id="btn-settings-bottom">Me Interesa</button>
+              <button
+                className="keyboard-btn"
+                id="btn-settings-top"
+                onClick={handleInterestClick}
+              >
+                Me Interesa
+              </button>
+              <button
+                className="keyboard-btn"
+                id="btn-settings-bottom"
+                onClick={handleInterestClick}
+              >
+                Me Interesa
+              </button>
               <button className="keyboard-btn" id="btn-help">Descargar</button>
 
             </div>
