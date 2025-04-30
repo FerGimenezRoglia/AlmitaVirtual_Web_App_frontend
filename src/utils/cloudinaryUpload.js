@@ -9,11 +9,11 @@ export async function uploadFileToCloudinary(file) {
     formData.append("folder", "almita_cloud/user_uploads"); // 🟢 carpeta en Cloudinary
   
     try {
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, {
         method: "POST",
         body: formData
       });
-  
+      
       if (response.ok) {
         const data = await response.json();
         return data.secure_url; // 🌐 Este es el link que se guarda en el backend

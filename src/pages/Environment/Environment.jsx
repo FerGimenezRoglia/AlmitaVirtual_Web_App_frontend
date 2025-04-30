@@ -272,6 +272,35 @@ const Environment = () => {
     }
   };
 
+  // 📄 Función que descargar el archivo del entorno 🥎
+  const handleDownloadFileClick = () => {
+    if (!env.url) {
+      setMonitorPopupText("⚠️ No hay archivo para descargar.");
+      setShowMonitorPopup(true);
+      return;
+    }
+
+    // Solo agregamos fl_attachment si es PDF
+    const isPDF = env.url.endsWith(".pdf");
+    const downloadUrl = isPDF
+      ? env.url.replace("/upload/", "/upload/fl_attachment/")
+      : env.url;
+
+    // Crear link oculto
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = "archivo"; // opcional: puedes poner un nombre más preciso
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Mensaje visual al usuario
+    setMonitorPopupText("✔️ Archivo descargado correctamente.");
+    setShowMonitorPopup(true);
+    setTimeout(() => {
+      setShowMonitorPopup(false);
+    }, 3000);
+  };
 
   // 🎯 Función que maneja el click en "Me Interesa"
   const handleInterestClick = async () => {
@@ -499,7 +528,13 @@ const Environment = () => {
               >
                 Ver
               </button>
-              <button className="keyboard-btn" id="btn-help">Descargar</button>
+              <button
+                className="keyboard-btn"
+                id="btn-help"
+                onClick={handleDownloadFileClick}
+              >
+                Descargar
+              </button>
 
             </div>
           </div>
