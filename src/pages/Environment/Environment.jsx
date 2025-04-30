@@ -22,12 +22,14 @@ const Environment = () => {
   const [monitorPopupText, setMonitorPopupText] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isInterestPopup, setIsInterestPopup] = useState(false);
+  const [showFileViewer, setShowFileViewer] = useState(false);
+  const [fileUrl, setFileUrl] = useState(null);
   const interestPhrases = [
     '"Este gesto ya significa mucho. Gracias, de verdad."',
     '"Tu interés no pasa desapercibido. Gracias por estar."',
     '“Una linda señal para mi. Gracias, me motiva."',
     '"Hay interacciones que inspiran. Esta fue una. Gracias por eso.”',
-    '“Abrazo de Almita. !Muchas gracias!”',
+    'Abrazo de Almita. !Muchas gracias!',
   ];
   const [phraseIndex, setPhraseIndex] = useState(0);
   const getMonitorTextColor = () => {
@@ -229,6 +231,48 @@ const Environment = () => {
     }
   };
 
+  // 📄 Función que elimina el archivo del entorno
+  const handleViewFileClick = async () => {
+    if (!env.url) {
+      setMonitorPopupText("⚠️ No hay archivo para visualizar.");
+      setShowMonitorPopup(true);
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/public/environments/${id}/file`);
+      if (response.ok) {
+        const url = await response.text();
+
+        if (url.endsWith(".pdf")) {
+          // ❗ Mostrar mensaje en el monitor en lugar del visor
+          setMonitorPopupText("📄 Archivo PDF habilitado para descarga.");
+          setShowMonitorPopup(true);
+          return;
+        }
+
+        // Si es imagen, sí mostramos visor
+        setFileUrl(url);
+        setShowFileViewer(true);
+
+        const envResponse = await fetch(`http://localhost:8080/public/environments/${id}`);
+        if (envResponse.ok) {
+          const updatedEnv = await envResponse.json();
+          setEnv(updatedEnv);
+        }
+
+      } else {
+        setPopupText("❌ Error al cargar el archivo.");
+        setShowPopup(true);
+      }
+    } catch (error) {
+      console.error("❌ Error al visualizar archivo:", error);
+      setPopupText("❌ Error inesperado. Inténtalo más tarde.");
+      setShowPopup(true);
+    }
+  };
+
+
   // 🎯 Función que maneja el click en "Me Interesa"
   const handleInterestClick = async () => {
     try {
@@ -382,6 +426,27 @@ const Environment = () => {
                 </div>
               </div>
             )}
+            {/* Popup para el visor del archivo */}
+            {showFileViewer && (
+              <div className="custom-modal">
+                <div className="custom-modal-content file-viewer-modal">
+                  {fileUrl.endsWith(".pdf") ? (
+                    <object
+                      data={fileUrl}
+                      type="application/pdf"
+                      className="file-viewer-iframe"
+                    >
+                      <p>No se puede mostrar el archivo PDF. <a href={fileUrl} target="_blank" rel="noopener noreferrer">Descargar</a></p>
+                    </object>
+                  ) : (
+                    <img src={fileUrl} alt="Archivo" className="file-viewer-img" />
+                  )}
+                  <div className="custom-modal-buttons">
+                    <button onClick={() => setShowFileViewer(false)}>Cerrar</button>
+                  </div>
+                </div>
+              </div>
+            )}
 
           </div>
 
@@ -426,6 +491,13 @@ const Environment = () => {
                 onClick={handleInterestClick}
               >
                 Me Interesa
+              </button>
+              <button
+                className="keyboard-btn"
+                id="btn-enter"
+                onClick={handleViewFileClick}
+              >
+                Ver
               </button>
               <button className="keyboard-btn" id="btn-help">Descargar</button>
 

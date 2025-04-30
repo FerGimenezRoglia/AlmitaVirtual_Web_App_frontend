@@ -421,3 +421,63 @@
   outline: none;
   box-shadow: 0 0 0 1px var(--color-main-1);
 }
+
+/* ─────────────────────────────────────
+ 🎯 VISOR de archivo en entorno. 
+────────────────────────────────────── */
+.file-viewer-modal {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  padding: 0;
+  position: relative;
+}
+
+/* PDF */
+.file-viewer-iframe {
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+}
+
+/* IMG */
+.file-viewer-img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 6px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  object-fit: contain;
+}
+
+/* Botón cerrar más visible */
+.custom-modal-buttons {
+  margin-top: 0.7rem;
+  align-self: flex-end;
+  padding-right: 0.6rem;
+}
+
+.custom-modal-buttons button {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.5rem;
+  background-color: transparent;
+  border: 1px solid var(--color-main-1);
+  color: var(--color-main-1);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.custom-modal-buttons button:hover {
+  background-color: var(--color-main-1);
+  color: #000;
+}

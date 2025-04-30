@@ -9,7 +9,7 @@ export async function uploadFileToCloudinary(file) {
     formData.append("folder", "almita_cloud/user_uploads"); // 🟢 carpeta en Cloudinary
   
     try {
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
         method: "POST",
         body: formData
       });
