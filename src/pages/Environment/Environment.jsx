@@ -272,34 +272,56 @@ const Environment = () => {
     }
   };
 
-  // 📄 Función que descargar el archivo del entorno 🥎
+  // 📄 Función que descargar el archivo del entorno 
   const handleDownloadFileClick = () => {
-    if (!env.url) {
+    if (!env?.url) {
       setMonitorPopupText("⚠️ No hay archivo para descargar.");
       setShowMonitorPopup(true);
+      setTimeout(() => {
+        setShowMonitorPopup(false);
+      }, 5000);
+      return;
+    }
+    
+    const url = env.url;
+    const extension = url.split('.').pop().toLowerCase();
+    const isImage = extension === 'jpg' || extension === 'jpeg' || extension === 'png';
+
+    if (!isImage) {
+      setMonitorPopupText("⚠️ Solo es posible descargar imágenes JPG/PNG por ahora.");
+      setShowMonitorPopup(true);
+      setTimeout(() => {
+        setShowMonitorPopup(false);
+      }, 5000);
       return;
     }
 
-    // Solo agregamos fl_attachment si es PDF
-    const isPDF = env.url.endsWith(".pdf");
-    const downloadUrl = isPDF
-      ? env.url.replace("/upload/", "/upload/fl_attachment/")
-      : env.url;
+    // Descargar imagen correctamente desde Cloudinary
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = objectUrl;
+        a.download = 'archivo.' + extension;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(objectUrl);
 
-    // Crear link oculto
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = "archivo"; // opcional: puedes poner un nombre más preciso
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Mensaje visual al usuario
-    setMonitorPopupText("✔️ Archivo descargado correctamente.");
-    setShowMonitorPopup(true);
-    setTimeout(() => {
-      setShowMonitorPopup(false);
-    }, 3000);
+        setMonitorPopupText("✔️ Imagen descargada correctamente.");
+        setShowMonitorPopup(true);
+        setTimeout(() => {
+          setShowMonitorPopup(false);
+        }, 10000);
+      })
+      .catch(() => {
+        setMonitorPopupText("❌ Error al descargar la imagen.");
+        setShowMonitorPopup(true);
+        setTimeout(() => {
+          setShowMonitorPopup(false);
+        }, 10000);
+      });
   };
 
   // 🎯 Función que maneja el click en "Me Interesa"
