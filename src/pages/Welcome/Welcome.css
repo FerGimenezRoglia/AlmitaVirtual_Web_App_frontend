@@ -46,21 +46,19 @@ body {
   gap: 0rem; /* bien pegado entre INFO y COMENZAR */
 }
 
-.menu-item {
+.menu-item,
+.sub-item {
   font-size: 0.95rem;
   cursor: pointer;
   text-transform: uppercase;
   color: var(--color-secondary-1);
   transition: color 0.3s ease;
-  line-height: 0; /* ajusta altura exacta entre INFO y COMENZAR */
+  line-height: 0;
 }
 
-.menu-item:hover {
+.menu-item:hover,
+.sub-item:hover {
   color: var(--color-main-1);
-}
-
-.menu-item.spaced {
-  margin-top: 6rem; /* HOLA bien separado */
 }
 
 /* Lado izquierdo: mantiene el diseño anterior */
@@ -70,6 +68,8 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start; /* <- Esto asegura que el contenido siga alineado a la izquierda */
+  margin-top: 0rem;
+  padding-left: 2.5rem;
 }
 
 /* Lado derecho: lo que aparece al hacer click */
@@ -239,3 +239,4 @@ input:-webkit-autofill {
   -webkit-text-fill-color: var(--color-main-1) !important; /* ← Color cremita */
   transition: background-color 5000s ease-in-out 100s;
 }
+

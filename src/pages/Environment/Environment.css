@@ -4,7 +4,7 @@
   align-items: flex-start;
   justify-content: flex-start;
   min-height: 600px;
-  padding-top: 4rem;
+  padding-top: 5rem;
   /* Fijamos altura visible */
   height: 100vh;
   overflow-y: auto;
@@ -112,10 +112,11 @@
  👤 Título del usuario
 ────────────────────────────────────── */
 .user-title {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 300;
   color: var(--color-secondary-1);
   margin-bottom: 0.5rem;
+  margin-top: 0rem;
 }
 
 /* ─────────────────────────────────────
@@ -168,7 +169,7 @@
   align-items: flex-start;
   /* 📌 Importante para alinear a la izquierda */
   justify-content: flex-start;
-  padding: 4rem;
+  padding: 5rem;
   margin-top: 0rem;
 }
 

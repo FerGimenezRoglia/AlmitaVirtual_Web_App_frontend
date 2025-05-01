@@ -68,15 +68,24 @@ const Welcome = () => {
           <div className="grouped-items">
             <p className="menu-item first" onClick={() => setActiveSection('info')}>INFO _</p>
 
-            <p className="menu-item second">
-              <span onClick={() => setActiveSection('comenzar')}>COMENZAR _</span>
+            <div className="grouped-items">
+              <p className="menu-item">
+                <span onClick={() => setActiveSection(activeSection === 'comenzar' ? null : 'comenzar')}>
+                  COMENZAR&nbsp;_
+                </span>
+              </p>
+
               {activeSection === 'comenzar' && (
                 <>
-                  <span onClick={() => setActiveSection('login')} className="sub-item"> INICIAR SESIÓN _</span>
-                  <span onClick={() => setActiveSection('register')} className="sub-item"> REGISTRARSE _</span>
+                  <p className="sub-item" onClick={() => setActiveSection('login')}>
+                    INICIAR SESIÓN&nbsp;_
+                  </p>
+                  <p className="sub-item" onClick={() => setActiveSection('register')}>
+                    REGISTRARSE&nbsp;_
+                  </p>
                 </>
               )}
-            </p>
+            </div>
           </div>
 
           <p className="menu-item spaced" onClick={() => setActiveSection('hola')}>[HOLA]</p>
@@ -100,7 +109,7 @@ const Welcome = () => {
         {activeSection === 'comenzar' && (
           <div className="info-box">
             <p className="info-text">
-              Iniciá sesión si ya tenés una cuenta, o registrate para crear tu entorno digital.
+              <span className="highlighted-section">Iniciá sesión</span> si ya tenés una cuenta, o <span className="highlighted-section">registrate</span> para crear tu entorno digital.
             </p>
           </div>
         )}
