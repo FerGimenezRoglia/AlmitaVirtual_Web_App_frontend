@@ -239,4 +239,3 @@ input:-webkit-autofill {
   -webkit-text-fill-color: var(--color-main-1) !important; /* ← Color cremita */
   transition: background-color 5000s ease-in-out 100s;
 }
-

@@ -34,18 +34,25 @@ const Welcome = () => {
 
   const [loginSuccess, setLoginSuccess] = useState(false); // 🟢 Login exitoso
   const [pendingRole, setPendingRole] = useState(null); // 👑 Rol pendiente para redirigir
+  const [registerError, setRegisterError] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  useEffect(() => {
+    setLoginError("");
+    setRegisterError("");
+  }, [activeSection]);
 
   // 🧭 Redirección segura después de login
   useEffect(() => {
     if (loginSuccess && pendingRole) {
       if (pendingRole === 'ROLE_ADMIN') {
-        alert('🔵 Bienvenida Admin');
+        alert('// Bienvenida Admin');
         navigate('/admin');
       } else if (pendingRole === 'ROLE_USER') {
-        alert('🟢 Bienvenida Usuario');
+        alert('// Bienvenida Usuario');
         navigate('/profile');
       } else {
-        alert('❌ Rol desconocido. No tienes acceso.');
+        alert('// Rol desconocido. No tienes acceso.');
       }
     }
   }, [loginSuccess, pendingRole]);
@@ -119,10 +126,23 @@ const Welcome = () => {
           <div className="info-box">
             <form
               className="form-box"
+              noValidate
               onSubmit={async (e) => {
                 e.preventDefault();
-                const username = e.target[0].value;
-                const password = e.target[1].value;
+                const username = e.target.username.value.trim();
+                const password = e.target.password.value.trim();
+
+                setLoginError("");
+
+                if (username.length < 4) {
+                  setLoginError("⚠️ El nombre de usuario es obligatorio y debe tener al menos 4 caracteres.");
+                  return;
+                }
+
+                if (!password) {
+                  setLoginError("⚠️ La contraseña es obligatoria.");
+                  return;
+                }
 
                 try {
                   const response = await fetch('http://localhost:8080/auth/login', {
@@ -133,7 +153,7 @@ const Welcome = () => {
 
                   if (!response.ok) {
                     const errorJson = await response.json();
-                    alert('❌ Error: ' + (errorJson.message || 'Error desconocido'));
+                    alert('// Error: ' + (errorJson.message || 'Error desconocido'));
                     return;
                   }
 
@@ -145,16 +165,16 @@ const Welcome = () => {
                   const role = payload.role || payload.authorities?.[0]?.authority;
 
                   if (role === 'ROLE_ADMIN') {
-                    alert('🔵 Bienvenida Admin');
+                    alert('// Bienvenida Admin');
                     window.location.href = '/admin';
                   } else if (role === 'ROLE_USER') {
-                    alert('🟢 Bienvenida Usuario');
+                    alert('// Bienvenida Usuario');
                     window.location.href = '/profile';
                   } else {
-                    alert('❌ Rol desconocido. No tienes acceso.');
+                    alert('// Rol desconocido. No tienes acceso.');
                   }
                 } catch (err) {
-                  alert('❌ Error de red: ' + err.message);
+                  alert('// Error de red: ' + err.message);
                 }
               }}
             >
@@ -180,6 +200,7 @@ const Welcome = () => {
               </label>
 
               <button type="submit">Iniciar sesión</button>
+              {loginError && <span className="error-msg">{loginError}</span>}
             </form>
           </div>
         )}
@@ -190,10 +211,24 @@ const Welcome = () => {
           <div className="info-box">
             <form
               className="form-box"
+              noValidate
               onSubmit={async (e) => {
                 e.preventDefault();
-                const username = e.target.username.value;
-                const password = e.target.password.value;
+                const username = e.target.username.value.trim();
+                const password = e.target.password.value.trim();
+
+                setRegisterError("");
+
+                if (username.length < 4) {
+                  setRegisterError("⚠️ El nombre de usuario es obligatorio y debe tener al menos 4 caracteres.");
+                  return;
+                }
+
+                const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+                if (!passwordRegex.test(password)) {
+                  setRegisterError("⚠️ La contraseña es obligatoria.");
+                  return;
+                }
 
                 try {
                   const response = await fetch('http://localhost:8080/auth/register', {
@@ -203,14 +238,14 @@ const Welcome = () => {
                   });
 
                   if (response.ok) {
-                    alert('🟢 Usuario registrado correctamente');
+                    alert('// Usuario registrado correctamente');
                     setActiveSection('login');
                   } else {
                     const errorJson = await response.json();
-                    alert('❌ Error: ' + (errorJson.message || 'Error desconocido'));
+                    alert('// Error: ' + (errorJson.message || 'Error desconocido'));
                   }
                 } catch (err) {
-                  alert('❌ Error de red: ' + err.message);
+                  alert('// Error de red: ' + err.message);
                 }
               }}
             >
@@ -231,7 +266,7 @@ const Welcome = () => {
                 <input
                   type="password"
                   name="password"
-                  placeholder="Tu contraseña con mínimo 8 caracteres"
+                  placeholder="Tu contraseña"
                   required
                   minLength="8"
                 />
@@ -242,6 +277,7 @@ const Welcome = () => {
               </span>
 
               <button type="submit">Registrarse</button>
+              {registerError && <span className="error-msg">{registerError}</span>}
             </form>
           </div>
         )}

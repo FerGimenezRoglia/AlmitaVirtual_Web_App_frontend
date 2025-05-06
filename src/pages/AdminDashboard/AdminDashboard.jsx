@@ -383,9 +383,16 @@ const AdminDashboard = () => {
                   }}
                 >
                   <option value="">seleccionar _</option>
-                  {[...userEnvs, ...allEnvs].map(env => (
-                    <option key={env.id} value={env.id}>{env.title}</option>
-                  ))}
+                  <optgroup label="/ ADMIN _">
+                    {userEnvs.map(env => (
+                      <option key={env.id} value={env.id}>{env.title}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="/ USUARIOS _">
+                    {allEnvs.map(env => (
+                      <option key={env.id} value={env.id}>{env.title}</option>
+                    ))}
+                  </optgroup>
                 </select>
               </form>
             ) : (
@@ -406,14 +413,17 @@ const AdminDashboard = () => {
                 )}
 
                 <label>
-                  Descripción
+                Descripción 
                   <input
                     type="text"
                     name="description"
                     placeholder="Breve descripción"
                     maxLength="300"
+                    value={editFormData.description}
                     onChange={(e) => {
-                      setDescriptionLength(e.target.value.length);
+                      const input = e.target.value;
+                      setEditFormData({ ...editFormData, description: input });
+                      setDescriptionLength(input.length);
                     }}
                   />
                 </label>
@@ -467,10 +477,25 @@ const AdminDashboard = () => {
         {activeSection === 'eliminar' && (
           <div className="info-box">
             <p className="info-text">
-              TODOS LOS ENTORNOS <span className="highlighted-section">/ ELIMINAR _</span>
+              TUS ENTORNOS <span className="highlighted-section">/ ADMIN _</span>
             </p>
             <ul className="env-list">
-              {[...userEnvs, ...allEnvs].map((env) => (
+              {userEnvs.map((env) => (
+                <li
+                  key={env.id}
+                  className="env-item"
+                  onClick={() => setConfirmDeleteId(env.id)}
+                >
+                  <span className="env-dot">•</span> {env.title}
+                </li>
+              ))}
+            </ul>
+
+            <p className="info-text">
+              LOS ENTORNOS <span className="highlighted-section">/ USUARIOS _</span>
+            </p>
+            <ul className="env-list">
+              {allEnvs.map((env) => (
                 <li
                   key={env.id}
                   className="env-item"
@@ -484,10 +509,10 @@ const AdminDashboard = () => {
         )}
 
         {activeSection === 'estado' && (
-           <div className="info-box">
-           <AlmitaDisplay status="ACTIVE" color="BLUE" />
-         </div>
-       )}
+          <div className="info-box">
+            <AlmitaDisplay status="ACTIVE" color="BLUE" />
+          </div>
+        )}
 
       </div>
       {confirmDeleteId && (

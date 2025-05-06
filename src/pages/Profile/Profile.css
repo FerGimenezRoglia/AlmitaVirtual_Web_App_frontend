@@ -324,9 +324,9 @@ select:focus {
 }
 /* 👉 Estilo para msj de error de título de entorno */
 .error-msg {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--color-secondary-1);
-  margin-top: 0rem;
+  margin-top: -0.4rem;
   margin-bottom: 0rem;
   display: block;
   font-weight: 400;
