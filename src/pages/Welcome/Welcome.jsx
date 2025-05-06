@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
-import ModalMessage from "../../components/atoms/ModalMessage";
+import ModalBase from "../../components/atoms/ModalBase";
 import './Welcome.css';
 
 // 🔍 Decodifica el token para extraer el nombre de usuario
@@ -310,7 +310,7 @@ const Welcome = () => {
       </div>
 
       {modalConfig && (
-        <ModalMessage
+        <ModalBase
           message={modalConfig.message}
           onConfirm={() => {
             setModalConfig(null);
@@ -320,7 +320,7 @@ const Welcome = () => {
             setModalConfig(null);
             modalConfig.onCancel?.();
           } : null}
-          confirmText={modalConfig.confirmText}
+          confirmText={modalConfig.confirmText || "Aceptar"}
           cancelText={modalConfig.cancelText}
         />
       )}

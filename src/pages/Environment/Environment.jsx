@@ -5,6 +5,7 @@ import screenImage from "../../assets/images/screen.svg";
 import keyboardImage from "../../assets/images/keyboard.svg";
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import './Environment.css';
+import ModalBase from '../../components/atoms/ModalBase';
 
 const Environment = () => {
   const { id } = useParams();
@@ -168,7 +169,7 @@ const Environment = () => {
       if (response.ok) {
         const updatedEnv = await response.json();
         setEnv(updatedEnv);
-        setPopupText("✔️ Archivo subido correctamente.");
+        setPopupText("// Archivo subido correctamente.");
         setShowPopup(true);
       } else {
         const errorText = await response.text();
@@ -282,7 +283,7 @@ const Environment = () => {
       }, 5000);
       return;
     }
-    
+
     const url = env.url;
     const extension = url.split('.').pop().toLowerCase();
     const isImage = extension === 'jpg' || extension === 'jpeg' || extension === 'png';
@@ -309,7 +310,7 @@ const Environment = () => {
         document.body.removeChild(a);
         URL.revokeObjectURL(objectUrl);
 
-        setMonitorPopupText("✔️ Imagen descargada correctamente.");
+        setMonitorPopupText("// Imagen descargada correctamente.");
         setShowMonitorPopup(true);
         setTimeout(() => {
           setShowMonitorPopup(false);
@@ -565,25 +566,21 @@ const Environment = () => {
       </div>
 
       {showUnauthorizedModal && (
-        <div className="custom-modal">
-          <div className="custom-modal-content">
-            <p>⚠️ No tienes permisos para editar este entorno.</p>
-            <div className="custom-modal-buttons">
-              <button onClick={() => setShowUnauthorizedModal(false)}>Cerrar</button>
-            </div>
-          </div>
-        </div>
+        <ModalBase
+          message="⚠️ No tienes permisos para editar este entorno."
+          onConfirm={() => setShowUnauthorizedModal(false)}
+          confirmText="Aceptar"
+          cancelText=""
+        />
       )}
 
       {showCopyLinkModal && (
-        <div className="custom-modal">
-          <div className="custom-modal-content">
-            <p>✔️ Copiado. Enlace listo para compartir.</p>
-            <div className="custom-modal-buttons">
-              <button onClick={() => setShowCopyLinkModal(false)}>Aceptar</button>
-            </div>
-          </div>
-        </div>
+        <ModalBase
+          message="// Copiado. Enlace listo para compartir."
+          onConfirm={() => setShowCopyLinkModal(false)}
+          confirmText="Aceptar"
+          cancelText=""
+        />
       )}
 
     </section>
