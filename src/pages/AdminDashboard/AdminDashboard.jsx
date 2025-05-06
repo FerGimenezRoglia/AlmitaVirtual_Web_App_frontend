@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import { getUsernameFromToken } from '../../utils/jwtUtils';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
+import ModalBase from '../../components/atoms/ModalBase';
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState(null);
@@ -23,8 +24,8 @@ const AdminDashboard = () => {
   const [createError, setCreateError] = useState("");
   const [editError, setEditError] = useState("");
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
-
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -130,7 +131,7 @@ const AdminDashboard = () => {
 
       if (response.status === 201) {
         const data = await response.json();
-        alert("☑️ Entorno creado con éxito");
+        // alert("☑️ Entorno creado con éxito");
         navigate(`/environment/${data.id}`);
       } else {
         const errorText = await response.text();
@@ -208,7 +209,7 @@ const AdminDashboard = () => {
         }
       }
 
-      alert("🟢 Entorno actualizado con éxito");
+      // alert("🟢 Entorno actualizado con éxito");
       navigate(`/environment/${selectedEnvId}`);
 
     } catch (err) {
@@ -413,7 +414,7 @@ const AdminDashboard = () => {
                 )}
 
                 <label>
-                Descripción 
+                  Descripción
                   <input
                     type="text"
                     name="description"
@@ -484,7 +485,10 @@ const AdminDashboard = () => {
                 <li
                   key={env.id}
                   className="env-item"
-                  onClick={() => setConfirmDeleteId(env.id)}
+                  onClick={() => {
+                    setConfirmDeleteId(env.id);
+                    setShowModal(true);
+                  }}
                 >
                   <span className="env-dot">•</span> {env.title}
                 </li>
@@ -499,7 +503,10 @@ const AdminDashboard = () => {
                 <li
                   key={env.id}
                   className="env-item"
-                  onClick={() => setConfirmDeleteId(env.id)}
+                  onClick={() => {
+                    setConfirmDeleteId(env.id);
+                    setShowModal(true);
+                  }}
                 >
                   <span className="env-dot">•</span> {env.title}
                 </li>
@@ -515,16 +522,15 @@ const AdminDashboard = () => {
         )}
 
       </div>
-      {confirmDeleteId && (
-        <div className="custom-modal">
-          <div className="custom-modal-content">
-            <p>¿Estás seguro de que deseas eliminar este entorno?</p>
-            <div className="custom-modal-buttons">
-              <button onClick={() => handleDeleteEnvironment(confirmDeleteId)}>Sí, eliminar</button>
-              <button onClick={() => setConfirmDeleteId(null)}>Cancelar</button>
-            </div>
-          </div>
-        </div>
+      {confirmDeleteId && showModal && (
+        <ModalBase
+          message="¿Estás seguro de que deseas eliminar este entorno?"
+          onConfirm={() => handleDeleteEnvironment(confirmDeleteId)}
+          onCancel={() => {
+            setShowModal(false);
+            setConfirmDeleteId(null);
+          }}
+        />
       )}
     </section>
   );

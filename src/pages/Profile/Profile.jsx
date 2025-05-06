@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import { getUsernameFromToken } from '../../utils/jwtUtils';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
+import ModalBase from '../../components/atoms/ModalBase';
 
 
 
@@ -14,6 +15,17 @@ const Profile = () => {
   const username = getUsernameFromToken(token);
   const [userEnvs, setUserEnvs] = useState([]);
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+
+  const handleConfirm = () => {
+    console.log("Confirmado!");
+    setShowModal(false);
+  };
+
+  const handleCancel = () => {
+    console.log("Cancelado");
+    setShowModal(false);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -148,7 +160,8 @@ const Profile = () => {
 
       if (response.status === 201) {
         const data = await response.json();
-        alert("🟢 Entorno creado con éxito");
+        // Entorno creado con éxito (mensaje suprimido)
+
         // ✅ Redirigimos al entorno recién creado
         navigate(`/environment/${data.id}`);
       } else {
@@ -159,7 +172,6 @@ const Profile = () => {
       alert("❌ Error de red: " + err.message);
     }
   };
-  // ⭕️ fin de función
 
   // 🍎 Maneja la actualización de un entorno existente
   const handleUpdateEnvironment = async (e) => {
@@ -232,7 +244,7 @@ const Profile = () => {
         }
       }
 
-      alert("🟢 Entorno actualizado con éxito");
+      // Entorno actualizado con éxito (mensaje suprimido)
       navigate(`/environment/${selectedEnvId}`);
 
     } catch (err) {
@@ -528,15 +540,13 @@ const Profile = () => {
 
       </div>
       {confirmDeleteId && (
-        <div className="custom-modal">
-          <div className="custom-modal-content">
-            <p>¿Estás seguro de que deseas eliminar este entorno?</p>
-            <div className="custom-modal-buttons">
-              <button onClick={() => handleDeleteEnvironment(confirmDeleteId)}>Sí, eliminar</button>
-              <button onClick={() => setConfirmDeleteId(null)}>Cancelar</button>
-            </div>
-          </div>
-        </div>
+        <ModalBase
+          message="¿Estás seguro de que deseas eliminar este entorno?"
+          onConfirm={() => handleDeleteEnvironment(confirmDeleteId)}
+          onCancel={() => setConfirmDeleteId(null)}
+          confirmText="Sí, eliminar"
+          cancelText="Cancelar"
+        />
       )}
 
     </section>

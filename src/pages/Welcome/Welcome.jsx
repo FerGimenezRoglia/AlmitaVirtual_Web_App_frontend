@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
-import ModalMessage from '../../components/ModalMessage';
+import ModalMessage from "../../components/atoms/ModalMessage";
 import './Welcome.css';
 
 // 🔍 Decodifica el token para extraer el nombre de usuario
