@@ -79,9 +79,14 @@ const Environment = () => {
         if (response.ok) {
           const data = await response.json();
           setEnv(data);
+          // ✅ En modo visitante, tomar el nombre del entorno si viene
+          if (!token && data.username) {
+            setUsername(data.username);
+          }
         } else {
           throw new Error("Error al cargar entorno");
         }
+
       } catch (err) {
         console.error("// Error al cargar entorno:", err);
         alert("// Error al cargar el entorno");
@@ -184,7 +189,12 @@ const Environment = () => {
       console.error("// Error inesperado al subir archivo:", error);
       setPopupText("// Error inesperado. Inténtalo más tarde.");
       setShowPopup(true);
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''; // ✅ Se limpia el input solo cuando TODO terminó bien o mal
+      }
     }
+
   };
 
   // 📄 Función que maneja el clic en el botón "Eliminar" 
@@ -377,7 +387,7 @@ const Environment = () => {
           </div>
 
           {/* 👤 Título del usuario */}
-          <p className="user-title">/ {username || "USUARIO"}</p>
+          <p className="user-title">/ {username}</p>
 
           {/* 📝 Título del entorno */}
           <p className="env-title">{env.title?.toUpperCase()}</p>
@@ -429,10 +439,32 @@ const Environment = () => {
 
             {/* Contenedor del texto del monitor */}
             <div className="monitor-text-wrapper">
-              <div className="monitor-text" style={{ color: getMonitorTextColor(env.color) }}>
-                {(env.status === "ACTIVE" || env.status === "EXCITED" || env.status === "INSPIRED")
-                  ? "SI / Archivo _"
-                  : "NO / Archivo _"}
+              <div className="monitor-text">
+                {(env.status === "ACTIVE" || env.status === "EXCITED" || env.status === "INSPIRED") ? (
+                  <>
+                    <span style={{ fontSize: "1.1rem", color: "#aaa8a1" }}>
+                      file = <span style={{ color: getMonitorTextColor(env.color) }}>true</span>;
+                    </span>
+                    <br />
+                    <span style={{ color: "#aaa8a1" }}>onLoad = () -&gt;</span>
+                    <br />
+                    <span style={{ color: "#aaa8a1" }}>&#123;</span>
+                    <span style={{ color: "#626262" }}>/* ready */</span>
+                    <span style={{ color: "#aaa8a1" }}>&#125;;</span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ fontSize: "1.1rem", color: "#aaa8a1" }}>
+                      file = <span style={{ color: getMonitorTextColor(env.color) }}>false</span>;
+                    </span>
+                    <br />
+                    <span style={{ color: "#aaa8a1" }}>onLoad = () -&gt;</span>
+                    <br />
+                    <span style={{ color: "#aaa8a1" }}>&#123;</span>
+                    <span style={{ color: "#626262" }}>/* upload */</span>
+                    <span style={{ color: "#aaa8a1" }}>&#125;;</span>
+                  </>
+                )}
               </div>
             </div>
 
