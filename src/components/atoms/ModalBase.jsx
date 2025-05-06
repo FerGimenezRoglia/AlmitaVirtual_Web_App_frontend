@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import './ModalBase.css';
 
 const ModalBase = ({ message, onConfirm, onCancel, confirmText = "Aceptar", cancelText = "Cancelar" }) => {
+  const handleKeyPress = useCallback((e) => {
+    if (e.key === 'Enter') {
+      onConfirm();
+    }
+  }, [onConfirm]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
+
   return (
     <div className="modal-base-overlay">
       <div className="modal-base-content">

@@ -216,7 +216,7 @@ const Environment = () => {
       if (response.ok) {
         const updatedEnv = await response.json();
         setEnv(updatedEnv);
-        setPopupText("✔️ Archivo eliminado correctamente.");
+        setPopupText("// Archivo eliminado correctamente.");
         setShowPopup(true);
       } else {
         const errorText = await response.text();

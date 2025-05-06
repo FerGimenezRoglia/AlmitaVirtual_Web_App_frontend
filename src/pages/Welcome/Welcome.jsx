@@ -32,12 +32,14 @@ function getRoleFromToken(token) {
 const Welcome = () => {
   const [activeSection, setActiveSection] = useState(null);
   const navigate = useNavigate();
-
   const [loginSuccess, setLoginSuccess] = useState(false); // 🟢 Login exitoso
   const [pendingRole, setPendingRole] = useState(null); // 👑 Rol pendiente para redirigir
   const [registerError, setRegisterError] = useState("");
   const [loginError, setLoginError] = useState("");
   const [modalConfig, setModalConfig] = useState(null);
+  const token = localStorage.getItem('token');
+  const isLoggedIn = !!token;
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     setLoginError("");
@@ -95,8 +97,46 @@ const Welcome = () => {
                 </>
               )}
             </div>
-          </div>
 
+            {isLoggedIn && (
+              <div className="grouped-items">
+                <p className="menu-item">
+                  <span onClick={() => setActiveSection(activeSection === 'perfil' ? null : 'perfil')}>
+                    PERFIL&nbsp;_
+                  </span>
+                </p>
+
+                {activeSection === 'perfil' && (
+                  <>
+                    {(() => {
+                      const token = localStorage.getItem('token');
+                      const role = getRoleFromToken(token);
+
+                      if (role === 'ROLE_USER') {
+                        return (
+                          <p className="sub-item" onClick={() => navigate('/profile')}>
+                            IR A PERFIL&nbsp;_
+                          </p>
+                        );
+                      } else if (role === 'ROLE_ADMIN') {
+                        return (
+                          <p className="sub-item" onClick={() => navigate('/admin')}>
+                            IR AL PANEL&nbsp;_
+                          </p>
+                        );
+                      } else {
+                        return null;
+                      }
+                    })()}
+                    <p className="sub-item" onClick={() => setShowLogoutModal(true)}>
+                      CERRAR SESIÓN&nbsp;_
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
+
+          </div>
           <p className="menu-item spaced" onClick={() => setActiveSection('hola')}>[HOLA]</p>
         </div>
       </div>
@@ -177,7 +217,7 @@ const Welcome = () => {
                     });
                   } else if (role === 'ROLE_USER') {
                     setModalConfig({
-                      message: "// Bienvenida Usuario",
+                      message: `// Bienvenida/o ${username}`,
                       confirmText: "Ir a mi perfil",
                       onConfirm: () => { window.location.href = '/profile'; }
                     });
@@ -188,7 +228,7 @@ const Welcome = () => {
                     });
                   }
                 } catch (err) {
-                  alert('// Error de red: ' + err.message);
+                  console.error('❌ Error inesperado en login:', err);
                 }
               }}
             >
@@ -218,7 +258,6 @@ const Welcome = () => {
             </form>
           </div>
         )}
-
 
         {/* 🧾 REGISTRO */}
         {activeSection === 'register' && (
@@ -322,6 +361,19 @@ const Welcome = () => {
           } : null}
           confirmText={modalConfig.confirmText || "Aceptar"}
           cancelText={modalConfig.cancelText}
+        />
+      )}
+
+      {showLogoutModal && (
+        <ModalBase
+          message="// ¿Deseas cerrar sesión?"
+          confirmText="Cerrar sesión"
+          cancelText="Cancelar"
+          onConfirm={() => {
+            localStorage.removeItem('token');
+            window.location.reload();
+          }}
+          onCancel={() => setShowLogoutModal(false)}
         />
       )}
     </section>

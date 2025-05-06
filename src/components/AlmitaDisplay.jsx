@@ -8,7 +8,7 @@ import React from 'react';
  * - color: string ("NEUTRAL", "YELLOW", etc.)
  */
 const AlmitaDisplay = ({ status = 'IDLE', color = 'NEUTRAL' }) => {
-  const fileName = `almita_${status.toLowerCase()}_${color.toLowerCase()}.png`; // o .gif si es animación
+  const fileName = `almita_${status.toLowerCase()}_${color.toLowerCase()}.png`; // .gif o .mg4 si es animación
 
   return (
     <img
