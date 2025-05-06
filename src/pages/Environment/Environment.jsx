@@ -60,7 +60,7 @@ const Environment = () => {
           const tokenData = JSON.parse(atob(token.split('.')[1]));
           setUserRole(tokenData.role); // Guardamos el rol en el estado
           setUsername(tokenData.sub); // Guardamos el nombre del usuario logueado
-          console.log("🔍 TOKEN DATA:", tokenData);
+          console.log("// TOKEN DATA:", tokenData);
         }
 
         let response;
@@ -72,7 +72,7 @@ const Environment = () => {
             },
           });
         } else {
-          console.log("🌐 Llamando a entorno público...");
+          console.log("// Llamando a entorno público...");
           response = await fetch(`http://localhost:8080/public/environments/${id}`);
         }
 
@@ -83,8 +83,8 @@ const Environment = () => {
           throw new Error("Error al cargar entorno");
         }
       } catch (err) {
-        console.error("❌ Error al cargar entorno:", err);
-        alert("❌ Error al cargar el entorno");
+        console.error("// Error al cargar entorno:", err);
+        alert("// Error al cargar el entorno");
       }
     };
 
@@ -122,6 +122,7 @@ const Environment = () => {
     if (!hasPermission()) {
       setMonitorPopupText("⚠️ No puedes Subir archivos.");
       setShowMonitorPopup(true);
+      setTimeout(() => setShowMonitorPopup(false), 10000);
       return;
     }
 
@@ -151,7 +152,7 @@ const Environment = () => {
       const uploadedUrl = await uploadFileToCloudinary(file);
 
       if (!uploadedUrl) {
-        setPopupText("❌ Error al subir el archivo. Inténtalo de nuevo.");
+        setPopupText("// Error al subir el archivo. Inténtalo de nuevo.");
         setShowPopup(true);
         return;
       }
@@ -171,14 +172,17 @@ const Environment = () => {
         setEnv(updatedEnv);
         setPopupText("// Archivo subido correctamente.");
         setShowPopup(true);
+        setTimeout(() => {
+          setShowPopup(false);
+        }, 10000);
       } else {
         const errorText = await response.text();
-        setPopupText(`❌ Error al registrar archivo: ${errorText}`);
+        setPopupText(`// Error al registrar archivo: ${errorText}`);
         setShowPopup(true);
       }
     } catch (error) {
-      console.error("❌ Error inesperado al subir archivo:", error);
-      setPopupText("❌ Error inesperado. Inténtalo más tarde.");
+      console.error("// Error inesperado al subir archivo:", error);
+      setPopupText("// Error inesperado. Inténtalo más tarde.");
       setShowPopup(true);
     }
   };
@@ -188,12 +192,14 @@ const Environment = () => {
     if (!hasPermission()) {
       setMonitorPopupText("⚠️ No puedes eliminar archivos.");
       setShowMonitorPopup(true);
+      setTimeout(() => setShowMonitorPopup(false), 10000);
       return;
     }
 
     if (!env.url) {
       setMonitorPopupText("⚠️ No hay archivo para eliminar.");
       setShowMonitorPopup(true);
+      setTimeout(() => setShowMonitorPopup(false), 10000);
       return;
     }
 
@@ -218,14 +224,17 @@ const Environment = () => {
         setEnv(updatedEnv);
         setPopupText("// Archivo eliminado correctamente.");
         setShowPopup(true);
+        setTimeout(() => {
+          setShowPopup(false);
+        }, 10000);
       } else {
         const errorText = await response.text();
-        setPopupText(`❌ Error al eliminar archivo: ${errorText}`);
+        setPopupText(`// Error al eliminar archivo: ${errorText}`);
         setShowPopup(true);
       }
     } catch (error) {
-      console.error("❌ Error inesperado al eliminar archivo:", error);
-      setPopupText("❌ Error inesperado. Inténtalo más tarde.");
+      console.error("// Error inesperado al eliminar archivo:", error);
+      setPopupText("// Error inesperado. Inténtalo más tarde.");
       setShowPopup(true);
     } finally {
       setShowDeleteConfirm(false); // Cerramos confirmación siempre
@@ -237,6 +246,7 @@ const Environment = () => {
     if (!env.url) {
       setMonitorPopupText("⚠️ No hay archivo para visualizar.");
       setShowMonitorPopup(true);
+      setTimeout(() => setShowMonitorPopup(false), 10000);
       return;
     }
 
@@ -247,8 +257,9 @@ const Environment = () => {
 
         if (url.endsWith(".pdf")) {
           // ❗ Mostrar mensaje en el monitor en lugar del visor
-          setMonitorPopupText("📄 Archivo PDF habilitado para descarga.");
+          setMonitorPopupText("// Archivo PDF habilitado para descarga.");
           setShowMonitorPopup(true);
+          setTimeout(() => setShowMonitorPopup(false), 10000);
           return;
         }
 
@@ -263,12 +274,12 @@ const Environment = () => {
         }
 
       } else {
-        setPopupText("❌ Error al cargar el archivo.");
+        setPopupText("// Error al cargar el archivo.");
         setShowPopup(true);
       }
     } catch (error) {
-      console.error("❌ Error al visualizar archivo:", error);
-      setPopupText("❌ Error inesperado. Inténtalo más tarde.");
+      console.error("// Error al visualizar archivo:", error);
+      setPopupText("// Error inesperado. Inténtalo más tarde.");
       setShowPopup(true);
     }
   };
@@ -278,9 +289,7 @@ const Environment = () => {
     if (!env?.url) {
       setMonitorPopupText("⚠️ No hay archivo para descargar.");
       setShowMonitorPopup(true);
-      setTimeout(() => {
-        setShowMonitorPopup(false);
-      }, 5000);
+      setTimeout(() => setShowMonitorPopup(false), 10000);
       return;
     }
 
@@ -291,9 +300,7 @@ const Environment = () => {
     if (!isImage) {
       setMonitorPopupText("⚠️ Solo es posible descargar imágenes JPG/PNG por ahora.");
       setShowMonitorPopup(true);
-      setTimeout(() => {
-        setShowMonitorPopup(false);
-      }, 5000);
+      setTimeout(() => setShowMonitorPopup(false), 10000);
       return;
     }
 
@@ -312,16 +319,12 @@ const Environment = () => {
 
         setMonitorPopupText("// Imagen descargada correctamente.");
         setShowMonitorPopup(true);
-        setTimeout(() => {
-          setShowMonitorPopup(false);
-        }, 10000);
+        setTimeout(() => setShowMonitorPopup(false), 10000);
       })
       .catch(() => {
-        setMonitorPopupText("❌ Error al descargar la imagen.");
+        setMonitorPopupText("// Error al descargar la imagen.");
         setShowMonitorPopup(true);
-        setTimeout(() => {
-          setShowMonitorPopup(false);
-        }, 10000);
+        setTimeout(() => setShowMonitorPopup(false), 10000);
       });
   };
 
@@ -347,12 +350,13 @@ const Environment = () => {
         }, 5000);
 
       } else {
-        setPopupText("❌ Error al registrar tu interés.");
+        setPopupText("// Error al registrar tu interés.");
         setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 10000);
       }
     } catch (error) {
-      console.error("❌ Error inesperado:", error);
-      setPopupText("❌ Error inesperado. Inténtalo más tarde.");
+      console.error("// Error inesperado:", error);
+      setPopupText("// Error inesperado. Inténtalo más tarde.");
       setShowPopup(true);
     }
   };

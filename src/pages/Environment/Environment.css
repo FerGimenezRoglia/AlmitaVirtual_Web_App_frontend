@@ -10,6 +10,13 @@
   overflow-y: auto;
 }
 
+/* 
+⚠️ Si aparece scroll vertical raro en el medio, revisar estos valores 
+ min-height: auto;
+ height: auto;
+ overflow-y: visible;
+*/
+
 /* ─────────────────────────────────────
  🔲 Cuadrante de animación visual (izquierda arriba)
 ────────────────────────────────────── */
@@ -418,7 +425,7 @@
   border: none;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   max-width: 90vw;
   max-height: 90vh;
@@ -468,4 +475,20 @@
 .custom-modal-buttons button:hover {
   background-color: var(--color-main-1);
   color: #000;
+}
+
+/* ─────────────────────────────────────
+ 🎯 CONTENEDOR MODAL DE VISUALIZACIÓN DE ARCHIVO (Visor de imagen)
+────────────────────────────────────── */
+.custom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(22, 22, 22, 0.8); /* Mismo color que --color-background-1 con transparencia suave */
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
