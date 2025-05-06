@@ -1,0 +1,58 @@
+.modal-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  
+  .modal-message-content {
+    background-color: #161616;
+    padding: 1.3rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    color: var(--color-main-1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    max-width: 345px;
+  }
+  
+  .modal-message-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .modal-message-buttons button {
+    padding: 0.5rem 0.9rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .modal-message-buttons button:first-child {
+    background-color: #622323;
+    color: #aaa8a1;
+  }
+  
+  .modal-message-buttons button:first-child:hover {
+    background-color: #626262;
+  }
+  
+  .modal-message-buttons button:last-child {
+    background-color: transparent;
+    border: 1px solid var(--color-main-1);
+    color: var(--color-main-1);
+  }
+  
+  .modal-message-buttons button:last-child:hover {
+    background-color: var(--color-main-1);
+    color: #000;
+  }

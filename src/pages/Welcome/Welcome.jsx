@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
+import ModalMessage from '../../components/ModalMessage';
 import './Welcome.css';
 
 // 🔍 Decodifica el token para extraer el nombre de usuario
@@ -36,6 +37,7 @@ const Welcome = () => {
   const [pendingRole, setPendingRole] = useState(null); // 👑 Rol pendiente para redirigir
   const [registerError, setRegisterError] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [modalConfig, setModalConfig] = useState(null);
 
   useEffect(() => {
     setLoginError("");
@@ -153,7 +155,10 @@ const Welcome = () => {
 
                   if (!response.ok) {
                     const errorJson = await response.json();
-                    alert('// Error: ' + (errorJson.message || 'Error desconocido'));
+                    setModalConfig({
+                      message: `// Error: ${errorJson.message || 'Error desconocido'}`,
+                      confirmText: "Aceptar"
+                    });
                     return;
                   }
 
@@ -165,13 +170,22 @@ const Welcome = () => {
                   const role = payload.role || payload.authorities?.[0]?.authority;
 
                   if (role === 'ROLE_ADMIN') {
-                    alert('// Bienvenida Admin');
-                    window.location.href = '/admin';
+                    setModalConfig({
+                      message: "// Bienvenida Admin",
+                      confirmText: "Ir al panel",
+                      onConfirm: () => { window.location.href = '/admin'; }
+                    });
                   } else if (role === 'ROLE_USER') {
-                    alert('// Bienvenida Usuario');
-                    window.location.href = '/profile';
+                    setModalConfig({
+                      message: "// Bienvenida Usuario",
+                      confirmText: "Ir a mi perfil",
+                      onConfirm: () => { window.location.href = '/profile'; }
+                    });
                   } else {
-                    alert('// Rol desconocido. No tienes acceso.');
+                    setModalConfig({
+                      message: "// Rol desconocido. No tienes acceso.",
+                      confirmText: "Aceptar"
+                    });
                   }
                 } catch (err) {
                   alert('// Error de red: ' + err.message);
@@ -238,11 +252,17 @@ const Welcome = () => {
                   });
 
                   if (response.ok) {
-                    alert('// Usuario registrado correctamente');
-                    setActiveSection('login');
+                    setModalConfig({
+                      message: "// Usuario registrado correctamente",
+                      confirmText: "Iniciar sesión",
+                      onConfirm: () => setActiveSection('login')
+                    });
                   } else {
                     const errorJson = await response.json();
-                    alert('// Error: ' + (errorJson.message || 'Error desconocido'));
+                    setModalConfig({
+                      message: `// Error: ${errorJson.message || 'Error desconocido'}`,
+                      confirmText: "Aceptar"
+                    });
                   }
                 } catch (err) {
                   alert('// Error de red: ' + err.message);
@@ -288,6 +308,22 @@ const Welcome = () => {
           </div>
         )}
       </div>
+
+      {modalConfig && (
+        <ModalMessage
+          message={modalConfig.message}
+          onConfirm={() => {
+            setModalConfig(null);
+            modalConfig.onConfirm?.();
+          }}
+          onCancel={modalConfig.onCancel ? () => {
+            setModalConfig(null);
+            modalConfig.onCancel?.();
+          } : null}
+          confirmText={modalConfig.confirmText}
+          cancelText={modalConfig.cancelText}
+        />
+      )}
     </section>
   );
 };
