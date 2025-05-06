@@ -1,14 +1,25 @@
-# node modules
+# node_modules
 node_modules/
 
-# logs
+# producción (build)
+dist/
+
+# log de errores
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# editor configs
+# editores y configuración de IDE
 .vscode/
 .idea/
 
-# build
-dist/
+# entorno de variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# archivos del sistema
+.DS_Store
+Thumbs.db
