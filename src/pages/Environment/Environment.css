@@ -3,11 +3,10 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  min-height: 600px;
+  min-height: auto;         /* 👈 Cambiamos esto */
+  height: auto;             /* 👈 Y esto */
+  overflow-y: visible;      /* 👈 Y esto */
   padding-top: 5rem;
-  /* Fijamos altura visible */
-  height: 100vh;
-  overflow-y: auto;
 }
 
 /* 
@@ -492,3 +491,4 @@
   justify-content: center;
   align-items: center;
 }
+
