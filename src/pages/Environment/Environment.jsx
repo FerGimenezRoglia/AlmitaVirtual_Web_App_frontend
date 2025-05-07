@@ -434,7 +434,7 @@ const Environment = () => {
         <div className="tech-block-wrapper">
 
           {/* Monitor */}
-          <div className="screen-wrapper">
+          <div className={`screen-wrapper ${showFileViewer ? 'no-transform' : ''}`}>
             <img src={screenImage} alt="Monitor SVG" className="monitor-svg" />
 
             {/* Contenedor del texto del monitor */}

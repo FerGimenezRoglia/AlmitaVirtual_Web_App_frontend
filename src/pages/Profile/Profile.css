@@ -264,3 +264,52 @@ select:focus {
   display: block;
   font-weight: 400;
 }
+
+/* 📱 RESPONSIVE: Perfil – Ajuste para pantallas menores a 768px */
+@media screen and (max-width: 768px) {
+  .profile-wrapper {
+    flex-direction: column;     /* ↩️ Cambio de horizontal a vertical */
+    align-items: flex-start;    /* 🔽 Justificamos a la izquierda */
+    padding: 2rem;
+  }
+
+  .left-side,
+  .right-side {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .left-side {
+    align-items: flex-start;    /* ↩️ Mantiene izquierda */
+    text-align: left;
+    margin-bottom: 3rem;
+  }
+
+  .title-block,
+  .description-block,
+  .menu-block {
+    text-align: left;
+  }
+
+  .menu-item {
+    margin-bottom: 1rem;
+  }
+
+  .right-side {
+    display: flex;
+    justify-content: center;   /* 🎯 Centra cuadrantes/formularios */
+    align-items: center;
+    margin-top: 1rem;
+  }
+
+  .info-box {
+    width: 100%;
+    max-width: 500px;
+  }
+}
+
+/* 🔽 Margen inferior para dar aire al final de la sección */
+.right-side {
+  padding-bottom: 5rem;
+}

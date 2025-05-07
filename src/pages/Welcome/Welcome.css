@@ -113,19 +113,54 @@ body {
   margin-bottom: 1rem; /* ← Este es el nuevo margen inferior */
 }
 
-@media (max-width: 768px) {
+/* 📱 RESPONSIVE: Welcome – ajustado para pantallas menores a 768px */
+@media screen and (max-width: 768px) {
+
   .welcome-wrapper {
-    flex-direction: column; /* ← Cambia a diseño vertical */
-    align-items: center;
-    padding: 2rem 5vw;
+    flex-direction: column;
+    align-items: flex-start;     /* 👈🏻 Todo justificado a la izquierda */
+    padding: 2rem;
   }
 
-  .left-side, .right-side {
+  .left-side,
+  .right-side {
     width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .left-side {
+    align-items: flex-start;     /* 👈🏻 Mantiene la alineación izquierda */
+    text-align: left;
+    margin-bottom: 3rem;
+  }
+
+  .title-block,
+  .description-block,
+  .menu-block {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .menu-item {
+    margin-bottom: 1rem;
   }
 
   .right-side {
-    margin-top: 3rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;   /* 🔧 Centrado horizontal del contenido */
+    align-items: center;
+    margin-top: 1.5rem;
+    padding: 0;
+  }
+
+  .almita-image {
+    max-width: 260px;
+  }
+
+  .video-container {
+    margin: 1rem auto 2rem auto;
   }
 }
 
@@ -239,3 +274,50 @@ input:-webkit-autofill {
   -webkit-text-fill-color: var(--color-main-1) !important; /* ← Color cremita */
   transition: background-color 5000s ease-in-out 100s;
 }
+
+/* 📱 FIX CENTRADO DEL BLOQUE DERECHO EN MÓVIL */
+@media screen and (max-width: 768px) {
+  .right-side {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding: 0;
+    margin-bottom: 3rem; 
+  }
+
+  .info-box {
+    margin: 0 auto;
+    width: 90%;               /* Ajustable: controlás el ancho visible */
+    max-width: 500px;         /* No se agranda más que esto */
+    text-align: left;
+    margin-bottom: 3rem !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .almita-box {
+    width: 90vw;
+    max-width: 280px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto 3rem auto;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px #00000020;
+    border: 0.5px solid var(--color-main-1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .almita-box > * {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+
+

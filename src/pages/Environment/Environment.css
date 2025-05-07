@@ -492,3 +492,130 @@
   align-items: center;
 }
 
+/* 📱 RESPONSIVE: Adaptamos layout para pantallas menores a 768px (tablets y móviles) */
+@media screen and (max-width: 768px) {
+
+  /* 📦 Colocamos los bloques principales (izquierda y derecha) en columna */
+  .profile-wrapper {
+    flex-direction: column;       /* 👉 Antes era row (horizontal), ahora en columna */
+    align-items: center;          /* 👉 Centramos los hijos en el eje horizontal */
+  }
+
+  /* 🧱 Ambos lados ocuparán el 100% del ancho disponible */
+  .left-side,
+  .right-side {
+    width: 100%;                  /* 👉 Aprovechamos todo el ancho */
+    padding: 2rem;                /* 👉 Espaciado interno para que no quede pegado al borde */
+  }
+
+  /* 🔧 Ajustamos el padding superior del lado derecho */
+  .right-side {
+    padding-top: 0;               /* 👉 Eliminamos el espacio de arriba para que quede pegado al bloque izquierdo */
+  }
+
+  /* 🧩 Centramos el contenido interno del bloque técnico (monitor, teclado) */
+  .tech-block-wrapper {
+    align-items: center;          /* 👉 Alineamos al centro el contenido vertical */
+  }
+  /* 🔄 Alineación izquierda del contenido textual en móvil */
+  .left-wrapper {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+}
+
+@media (max-width: 900px) {
+  .left-wrapper {
+    margin-bottom: 0rem; /* 💡 Le da aire antes del monitor cuando se apilan */
+  }
+}
+
+@media (max-width: 900px) {
+  .keyboard-wrapper {
+    margin-bottom: 3rem; /* Aumentá más si querés más aire */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .screen-wrapper {
+    transform: translateX(65px);  /* 🔁 Mueve el monitor a la derecha */
+  }
+
+  .keyboard-wrapper {
+    transform: translateX(-65px); /* 🔁 Mueve el teclado a la izquierda */
+  }
+}
+/* ✅ FORZAMOS el visor por encima de todo en móviles */
+@media screen and (max-width: 768px) {
+  .custom-modal {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999 !important;
+    background-color: rgba(22, 22, 22, 0.8) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 1rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .file-viewer-modal {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 90vw !important;
+    max-height: 80vh !important;
+    overflow: auto !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 999999 !important;
+  }
+
+  .file-viewer-img,
+  .file-viewer-iframe {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 70vh !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin: 0 auto !important;
+    z-index: 999999 !important;
+    position: relative !important;
+  }
+
+  .custom-modal-buttons {
+    margin-top: 1rem !important;
+    width: 100% !important;
+    text-align: center !important;
+    z-index: 999999 !important;
+    position: relative !important;
+  }
+
+  .custom-modal-buttons button {
+    padding: 0.5rem 1.2rem !important;
+    font-size: 1rem !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+
+  /* 🛑 Cualquier cosa que pueda tapar el visor, la hundimos abajo */
+  .screen-wrapper,
+  .keyboard-wrapper,
+  .monitor-svg,
+  .keyboard-svg {
+    position: relative !important;
+    z-index: 0 !important;
+  }
+}
+
+/* ✅ Clase que cancela el desplazamiento cuando se abre visor */
+@media screen and (max-width: 768px) {
+  .screen-wrapper.no-transform {
+    transform: none !important;
+  }
+}

@@ -342,7 +342,7 @@ const Welcome = () => {
         )}
 
         {activeSection === 'hola' && (
-          <div className="info-box">
+          <div className="info-box almita-box">
             <AlmitaDisplay status="ACTIVE" color="YELLOW" />
           </div>
         )}

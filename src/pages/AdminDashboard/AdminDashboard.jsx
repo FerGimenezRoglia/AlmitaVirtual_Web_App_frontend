@@ -4,6 +4,7 @@ import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import { getUsernameFromToken } from '../../utils/jwtUtils';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
 import ModalBase from '../../components/atoms/ModalBase';
+import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState(null);
@@ -31,7 +32,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
     const role = token ? JSON.parse(atob(token.split('.')[1])).role : null;
     if (role !== 'ROLE_ADMIN') {
-      alert('❌ Acceso denegado. Esta página es solo para administradores.');
+      alert('!! Acceso denegado. Esta página es solo para administradores.');
       navigate('/profile');
     }
   }, []);

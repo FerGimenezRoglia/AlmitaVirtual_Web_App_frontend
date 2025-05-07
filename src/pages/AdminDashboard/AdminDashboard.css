@@ -1,16 +1,39 @@
 /* 🎯 Estilos para el panel de administración */
 .admin-wrapper {
-    min-height: 100vh;
-    background-color: var(--color-background-1);
-    color: var(--color-main-1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  background-color: var(--color-background-1);
+  color: var(--color-main-1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Space Mono', monospace;
+}
+
+.admin-title {
+  font-size: 1.3rem;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+}
+
+/* 📱 FIX TEXTO DESBORDADO EN ADMIN - MÓVIL */
+@media screen and (max-width: 768px) {
+  .info-box {
+    margin: 0 auto;
+    width: 90%;
+    max-width: 500px;
+    text-align: left;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
-  
-  .admin-title {
-    font-size: 1.3rem;
-    letter-spacing: 0.05rem;
-    text-transform: uppercase;
+
+  .edit-label {
+    white-space: normal;
+    text-align: left;
   }
+
+  .info-text {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
