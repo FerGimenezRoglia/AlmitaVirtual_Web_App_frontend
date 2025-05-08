@@ -79,7 +79,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // ⭕️ Maneja la creación de un nuevo entorno (igual a Profile)
+  // ☑️ Maneja la creación de un nuevo entorno (igual a Profile)
   const handleCreateEnvironment = async (e) => {
     e.preventDefault();
 
@@ -143,7 +143,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // 🍎 Maneja la actualización de un entorno existente
+  // ☑️ Maneja la actualización de un entorno existente
   const handleUpdateEnvironment = async (e) => {
     e.preventDefault();
 
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // ❌ Maneja la eliminación de un entorno
+  // ☑️ Maneja la eliminación de un entorno
   const handleDeleteEnvironment = async (envId) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -327,7 +327,7 @@ const AdminDashboard = () => {
                 />
               </label>
 
-              {/* 👉 Contador de caracteres en vivo */}
+              {/* Contador de caracteres en vivo */}
               {descriptionLength > 0 && (
                 <span className="description-counter">
                   {descriptionLength}/300
@@ -430,7 +430,7 @@ const AdminDashboard = () => {
                   />
                 </label>
 
-                {/* 👉 Contador de caracteres en vivo */}
+                {/* Contador de caracteres en vivo */}
                 {descriptionLength > 0 && (
                   <span className="description-counter">
                     {descriptionLength}/300
@@ -516,6 +516,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
+        {/* 🔘 BOTÓN ESTADO (animación Almita) */}
         {activeSection === 'estado' && (
           <div className="info-box">
             <AlmitaDisplay status="ACTIVE" color="BLUE" />

@@ -37,7 +37,7 @@ const Profile = () => {
   }, []);
 
   const [selectedEnvId, setSelectedEnvId] = useState(null);
-  // 👉 Estado que cuenta cuántos caracteres lleva la descripción
+  // Estado que cuenta cuántos caracteres lleva la descripción
   const [descriptionLength, setDescriptionLength] = useState(0);
   const [editFormData, setEditFormData] = useState({
     title: '',
@@ -45,11 +45,9 @@ const Profile = () => {
     color: 'NEUTRAL',
     url: ''
   });
-
   const [createError, setCreateError] = useState("");
   const [editError, setEditError] = useState("");
-
-  // 🧨 ID del entorno que está pendiente de confirmación para eliminar
+  // ID del entorno que está pendiente de confirmación para eliminar
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   // Carga los entornos del usuario cuando se selecciona la sección 'ver'
@@ -64,12 +62,12 @@ const Profile = () => {
     }
   }, [activeSection]);
 
-  // 🧼 Limpiar error cuando se cambia de sección
+  // Limpiar error cuando se cambia de sección
   useEffect(() => {
     setCreateError("");
   }, [activeSection]);
 
-  // 🧼 Limpiar error cuando se cambia de sección
+  // Limpiar error cuando se cambia de sección
   useEffect(() => {
     setEditError("");
   }, [activeSection]);
@@ -101,7 +99,7 @@ const Profile = () => {
     }
   };
 
-  // ⭕️ Maneja la creación de un nuevo entorno
+  // ☑️ Maneja la creación de un nuevo entorno
   const handleCreateEnvironment = async (e) => {
     e.preventDefault();
 
@@ -111,35 +109,35 @@ const Profile = () => {
       return;
     }
 
-    // 🔽 Extraemos todos los valores del formulario
+    // Extraemos todos los valores del formulario
     const title = e.target.title.value;
     const description = e.target.description.value;
     const color = e.target.color.value;
-    const file = e.target.file.files[0]; // ✅ archivo opcional
+    const file = e.target.file.files[0]; // archivo opcional
 
-    // 🛑 Validación manual del campo título
+    // Validación manual del campo título
     if (!title.trim()) {
       setCreateError("⚠️ El título es obligatorio!");
       return;
     }
 
-    setCreateError(""); // ✅ Limpiamos error si pasa la validación
+    setCreateError(""); // Limpiamos error si pasa la validación
 
-    let fileUrl = ""; // 🌐 inicializamos el link del archivo vacío
+    let fileUrl = ""; // inicializamos el link del archivo vacío
 
-    // 🔁 Si el usuario cargó un archivo, lo subimos a Cloudinary
+    // Si el usuario cargó un archivo, lo subimos a Cloudinary
     if (file) {
       try {
         const uploadedUrl = await uploadFileToCloudinary(file);
         if (!uploadedUrl) throw new Error("No se obtuvo URL del archivo");
         fileUrl = uploadedUrl;
       } catch (error) {
-        alert("❌ Error al subir el archivo: " + error.message);
+        alert("// Error al subir el archivo: " + error.message);
         return;
       }
     }
 
-    // 🧱 Armamos el objeto con todos los campos
+    // Armamos el objeto con todos los campos
     const payload = {
       title,
       description,
@@ -147,7 +145,7 @@ const Profile = () => {
       url: fileUrl // puede ser vacío si no subió archivo
     };
 
-    // 🚀 Mandamos el entorno al backend
+    // Mandamos el entorno al backend
     try {
       const response = await fetch("http://localhost:8080/environments", {
         method: "POST",
@@ -162,22 +160,22 @@ const Profile = () => {
         const data = await response.json();
         // Entorno creado con éxito (mensaje suprimido)
 
-        // ✅ Redirigimos al entorno recién creado
+        // Redirigimos al entorno recién creado
         navigate(`/environment/${data.id}`);
       } else {
         const errorText = await response.text();
-        alert("❌ Error al crear entorno: " + errorText);
+        alert("// Error al crear entorno: " + errorText);
       }
     } catch (err) {
-      alert("❌ Error de red: " + err.message);
+      alert("// Error de red: " + err.message);
     }
   };
 
-  // 🍎 Maneja la actualización de un entorno existente
+  // ☑️ Maneja la actualización de un entorno existente
   const handleUpdateEnvironment = async (e) => {
     e.preventDefault();
 
-    setEditError(""); // ✅ Limpiamos el error si pasa validación
+    setEditError(""); // Limpiamos el error si pasa validación
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -185,12 +183,12 @@ const Profile = () => {
       return;
     }
 
-    // 🛑 Validación manual del campo título
+    // Validación manual del campo título
     if (!editFormData.title.trim()) {
       setEditError("⚠️ El título es obligatorio!");
       return;
     }
-    setEditError(""); // ✅ Limpiamos error si pasa la validación
+    setEditError(""); // Limpiamos error si pasa la validación
 
     try {
       // 1. Subimos archivo si hay uno nuevo
@@ -198,7 +196,7 @@ const Profile = () => {
       if (editFormData.file) {
         const uploadedUrl = await uploadFileToCloudinary(editFormData.file);
         if (!uploadedUrl) {
-          alert("❌ Error al subir el archivo");
+          alert("// Error al subir el archivo");
           return;
         }
         newFileUrl = uploadedUrl;
@@ -222,7 +220,7 @@ const Profile = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        alert("❌ Error al actualizar entorno: " + errorText);
+        alert("// Error al actualizar entorno: " + errorText);
         return;
       }
 
@@ -239,7 +237,7 @@ const Profile = () => {
 
         if (!registerFile.ok) {
           const errorText = await registerFile.text();
-          alert("❌ Archivo subido pero error al registrar en backend: " + errorText);
+          alert("// Archivo subido pero error al registrar en backend: " + errorText);
           return;
         }
       }
@@ -248,11 +246,11 @@ const Profile = () => {
       navigate(`/environment/${selectedEnvId}`);
 
     } catch (err) {
-      alert("❌ Error inesperado: " + err.message);
+      alert("// Error inesperado: " + err.message);
     }
   };
 
-  // 🍎 Maneja la eliminación de un entorno
+  // ☑️ Maneja la eliminación de un entorno
   const handleDeleteEnvironment = async (envId) => {
     //const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este entorno?");
     //if (!confirmDelete) return;
@@ -273,14 +271,14 @@ const Profile = () => {
 
       if (response.ok) {
         setConfirmDeleteId(null);
-        // alert("🗑️ Entorno eliminado correctamente.");
-        fetchUserEnvironments(); // 🔁 Refresca la lista
+        // alert(" Entorno eliminado correctamente.");
+        fetchUserEnvironments(); // Refresca la lista
       } else {
         const errorText = await response.text();
-        alert("❌ Error al eliminar entorno: " + errorText);
+        alert("// Error al eliminar entorno: " + errorText);
       }
     } catch (err) {
-      alert("❌ Error de red: " + err.message);
+      alert("// Error de red: " + err.message);
     }
   };
 
@@ -531,10 +529,10 @@ const Profile = () => {
             </ul>
           </div>
         )}
-
+        {/* 🔘 BOTÓN HOLA (animación Almita) */}
         {activeSection === 'estado' && (
           <div className="info-box">
-            <AlmitaDisplay status="ACTIVE" color="BLUE" />
+            <AlmitaDisplay status="EXCITED" color="YELLOW" />
           </div>
         )}
 

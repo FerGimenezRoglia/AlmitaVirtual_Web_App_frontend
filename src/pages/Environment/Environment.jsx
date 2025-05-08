@@ -50,7 +50,7 @@ const Environment = () => {
     }
   };
 
-  // 🧠 Carga del entorno según token o como visitante
+  // Carga del entorno según token o como visitante
   useEffect(() => {
     const fetchEnv = async () => {
       try {
@@ -96,7 +96,7 @@ const Environment = () => {
     fetchEnv();
   }, [id]);
 
-  // 🔁 Cambiar frase cada 5 minutos
+  // Cambiar frase cada 5 minutos
   useEffect(() => {
     const interval = setInterval(() => {
       setPhraseIndex(prev => {
@@ -117,12 +117,12 @@ const Environment = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // 🎯 Función que verifica si el usuario tiene permisos para acciones especiales 
+  // ☑️ Función que verifica si el usuario tiene permisos para acciones especiales 
   const hasPermission = () => {
     return userRole === "ROLE_ADMIN" || userRole === "ROLE_USER";
   };
 
-  // 📄 Función que maneja la subida de archivo 
+  // ☑️ Función que maneja la subida de archivo 
   const handleUploadFile = () => {
     if (!hasPermission()) {
       setMonitorPopupText("⚠️ No puedes Subir archivos.");
@@ -136,7 +136,7 @@ const Environment = () => {
     }
   };
 
-  // 📄 Función que maneja el cambio de archivo seleccionado 
+  // ☑️ Función que maneja el cambio de archivo seleccionado 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
 
@@ -145,7 +145,7 @@ const Environment = () => {
       return;
     }
 
-    // ✅ Validar tipo de archivo
+    // Validar tipo de archivo
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
     if (!allowedTypes.includes(file.type)) {
       setPopupText("⚠️ Solo se permiten archivos PDF, JPG o PNG.");
@@ -197,7 +197,7 @@ const Environment = () => {
 
   };
 
-  // 📄 Función que maneja el clic en el botón "Eliminar" 
+  // ☑️ Función que maneja el clic en el botón "Eliminar" 
   const handleDeleteFileClick = () => {
     if (!hasPermission()) {
       setMonitorPopupText("⚠️ No puedes eliminar archivos.");
@@ -217,7 +217,7 @@ const Environment = () => {
     setShowDeleteConfirm(true);
   };
 
-  // 📄 Función que elimina el archivo del entorno 
+  // ☑️ Función que elimina el archivo del entorno 
   const handleConfirmDeleteFile = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -251,7 +251,7 @@ const Environment = () => {
     }
   };
 
-  // 📄 Función que elimina el archivo del entorno
+  // ☑️ Función que elimina el archivo del entorno
   const handleViewFileClick = async () => {
     if (!env.url) {
       setMonitorPopupText("⚠️ No hay archivo para visualizar.");
@@ -266,7 +266,7 @@ const Environment = () => {
         const url = await response.text();
 
         if (url.endsWith(".pdf")) {
-          // ❗ Mostrar mensaje en el monitor en lugar del visor
+          // Mostrar mensaje en el monitor en lugar del visor
           setMonitorPopupText("// Archivo PDF habilitado para descarga.");
           setShowMonitorPopup(true);
           setTimeout(() => setShowMonitorPopup(false), 10000);
@@ -294,51 +294,64 @@ const Environment = () => {
     }
   };
 
-  // 📄 Función que descargar el archivo del entorno 
-  const handleDownloadFileClick = () => {
+  // ☑️ Función que descargar el archivo del entorno 
+  const handleDownloadFileClick = async () => {
     if (!env?.url) {
       setMonitorPopupText("⚠️ No hay archivo para descargar.");
       setShowMonitorPopup(true);
       setTimeout(() => setShowMonitorPopup(false), 10000);
       return;
     }
-
-    const url = env.url;
-    const extension = url.split('.').pop().toLowerCase();
-    const isImage = extension === 'jpg' || extension === 'jpeg' || extension === 'png';
-
-    if (!isImage) {
-      setMonitorPopupText("⚠️ Solo es posible descargar imágenes JPG/PNG por ahora.");
+  
+    try {
+      // Llamada que cambia el estado en backend
+      const response = await fetch(`http://localhost:8080/public/environments/${id}/file`);
+      if (!response.ok) {
+        throw new Error("No se pudo obtener el archivo");
+      }
+  
+      const url = await response.text();
+      const extension = url.split('.').pop().toLowerCase();
+      const isImage = extension === 'jpg' || extension === 'jpeg' || extension === 'png';
+  
+      if (!isImage) {
+        setMonitorPopupText("⚠️ Solo se puede descargar imágenes JPG/PNG.");
+        setShowMonitorPopup(true);
+        setTimeout(() => setShowMonitorPopup(false), 10000);
+        return;
+      }
+  
+      const blobResponse = await fetch(url);
+      const blob = await blobResponse.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = `archivo_${username || 'user'}.${extension}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(objectUrl);
+  
+      // Actualizar entorno
+      const envRes = await fetch(`http://localhost:8080/public/environments/${id}`);
+      if (envRes.ok) {
+        const updatedEnv = await envRes.json();
+        setEnv(updatedEnv);
+      }
+  
+      setMonitorPopupText("// Imagen descargada correctamente.");
       setShowMonitorPopup(true);
       setTimeout(() => setShowMonitorPopup(false), 10000);
-      return;
+  
+    } catch (error) {
+      console.error("// Error al descargar imagen:", error);
+      setMonitorPopupText("// Error al descargar.");
+      setShowMonitorPopup(true);
+      setTimeout(() => setShowMonitorPopup(false), 10000);
     }
-
-    // Descargar imagen correctamente desde Cloudinary
-    fetch(url)
-      .then(response => response.blob())
-      .then(blob => {
-        const objectUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = objectUrl;
-        a.download = `archivo_${username || 'user'}.${extension}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(objectUrl);
-
-        setMonitorPopupText("// Imagen descargada correctamente.");
-        setShowMonitorPopup(true);
-        setTimeout(() => setShowMonitorPopup(false), 10000);
-      })
-      .catch(() => {
-        setMonitorPopupText("// Error al descargar la imagen.");
-        setShowMonitorPopup(true);
-        setTimeout(() => setShowMonitorPopup(false), 10000);
-      });
   };
 
-  // 🎯 Función que maneja el click en "Me Interesa"
+  // ☑️ Función que maneja el click en "Me Interesa"
   const handleInterestClick = async () => {
     try {
       const response = await fetch(`http://localhost:8080/public/environments/${id}/status`, {
@@ -349,14 +362,14 @@ const Environment = () => {
         const updatedEnv = await response.json();
         setEnv(updatedEnv);
 
-        // ✅ Mostrar frase correspondiente
+        // Mostrar frase correspondiente
         setPopupText(interestPhrases[phraseIndex]);
-        setIsInterestPopup(true); // ✅ Activamos modo “sin botón”
+        setIsInterestPopup(true); // Activamos modo “sin botón”
         setShowPopup(true);
-        // ✅ Ocultar después de 5 segundos
+        // Ocultar después de 5 segundos
         setTimeout(() => {
           setShowPopup(false);
-          setIsInterestPopup(false); // 🧼 Limpiamos la bandera
+          setIsInterestPopup(false); // Limpiamos la bandera
         }, 5000);
 
       } else {
@@ -375,24 +388,24 @@ const Environment = () => {
 
   return (
     <section className="profile-wrapper">
-      {/* 🔹 LADO IZQUIERDO */}
+      {/* 🔘 LADO IZQUIERDO */}
       <div className="left-side">
         <div className="left-wrapper">
 
-          {/* 🖼️ Cuadrante visual */}
+          {/* Cuadrante visual */}
           <div className="cuadrante-wrapper">
             <div className="cuadrante-fijo">
               <AlmitaDisplay status={env.status} color={env.color} />
             </div>
           </div>
 
-          {/* 👤 Título del usuario */}
+          {/* Título del usuario */}
           <p className="user-title">/ {username}</p>
 
-          {/* 📝 Título del entorno */}
+          {/* Título del entorno */}
           <p className="env-title">{env.title?.toUpperCase()}</p>
 
-          {/* 🧾 Descripción del entorno */}
+          {/* Descripción del entorno */}
           <div className="description-container">
             <p className="description-text">
               {env.description}
@@ -429,7 +442,7 @@ const Environment = () => {
         </div>
       </div>
 
-      {/* 🔹 LADO DERECHO */}
+      {/* 🔘 LADO DERECHO */}
       <div className="right-side">
         <div className="tech-block-wrapper">
 

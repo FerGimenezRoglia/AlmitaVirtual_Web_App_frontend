@@ -46,7 +46,7 @@ const Welcome = () => {
     setRegisterError("");
   }, [activeSection]);
 
-  // 🧭 Redirección segura después de login
+  // ☑️ Redirección segura después de login
   useEffect(() => {
     if (loginSuccess && pendingRole) {
       if (pendingRole === 'ROLE_ADMIN') {
@@ -144,7 +144,7 @@ const Welcome = () => {
       {/* BLOQUE DERECHO */}
       <div className="right-side">
 
-        {/* 🎨 INFO */}
+        {/* 🔘 INFO */}
         {activeSection === 'info' && (
           <div className="info-box">
             <div className="info-text">
@@ -154,7 +154,7 @@ const Welcome = () => {
           </div>
         )}
 
-        {/* ✨ COMENZAR */}
+        {/* 🔘 COMENZAR */}
         {activeSection === 'comenzar' && (
           <div className="info-box">
             <p className="info-text">
@@ -163,7 +163,7 @@ const Welcome = () => {
           </div>
         )}
 
-        {/* 🔐 LOGIN */}
+        {/* 🔘 LOGIN */}
         {activeSection === 'login' && (
           <div className="info-box">
             <form
@@ -259,7 +259,7 @@ const Welcome = () => {
           </div>
         )}
 
-        {/* 🧾 REGISTRO */}
+        {/* 🔘 REGISTRO */}
         {activeSection === 'register' && (
           <div className="info-box">
             <form
@@ -341,9 +341,10 @@ const Welcome = () => {
           </div>
         )}
 
+        {/* 🔘 BOTÓN HOLA (animación Almita) */} 
         {activeSection === 'hola' && (
           <div className="info-box almita-box">
-            <AlmitaDisplay status="ACTIVE" color="YELLOW" />
+            <AlmitaDisplay status="IDLE" color="BLUE" />
           </div>
         )}
       </div>
