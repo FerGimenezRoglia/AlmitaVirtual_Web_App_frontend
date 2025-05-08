@@ -9,7 +9,14 @@ const NotFound = () => {
 
         {/* Imagen central, cuadrada */}
         <div className="notfound-image">
-          <img src="/assets/404.png" alt="404 Not Found" />
+          <video
+            src="/assets/404.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="notfound-video"
+          />
         </div>
 
         {/* Texto principal */}

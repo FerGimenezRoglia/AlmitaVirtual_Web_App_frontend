@@ -4,7 +4,7 @@
     --color-secondary-1: #626262;
   }
   
-  /* 🔳 Contenedor principal */
+  /* Contenedor principal */
   .notfound-wrapper {
     min-height: 100vh;
     background-color: var(--color-background-1);
@@ -14,7 +14,7 @@
     padding: 2rem;
   }
   
-  /* 🎯 Bloque centrado */
+  /* Bloque centrado */
   .notfound-content {
     display: flex;
     flex-direction: column;
@@ -22,7 +22,7 @@
     text-align: center;
   }
   
-  /* 📷 Imagen cuadrada */
+  /* Imagen cuadrada */
   .notfound-image {
     width: 340px;
     height: 340px;
@@ -36,7 +36,7 @@
     object-fit: contain;
   }
   
-  /* 📝 Título */
+  /* Título */
   .notfound-title {
     font-family: 'Space Mono', monospace;
     font-size: 1.3rem;
@@ -69,4 +69,10 @@
   .notfound-button:hover {
     background-color: var(--color-secondary-1);     /* Fondo cremita al pasar */
     color: var(--color-main-1);           /* Texto oscuro al pasar */
+  }
+  .notfound-video {
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 12px;
   }
