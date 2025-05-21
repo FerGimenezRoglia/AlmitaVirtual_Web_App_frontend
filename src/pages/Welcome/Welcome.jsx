@@ -269,17 +269,23 @@ const Welcome = () => {
                 e.preventDefault();
                 const username = e.target.username.value.trim();
                 const password = e.target.password.value.trim();
+                const recoveryKey = e.target.recoveryKey.value.trim();
 
                 setRegisterError("");
 
                 if (username.length < 4) {
-                  setRegisterError("⚠️ El nombre de usuario es obligatorio y debe tener al menos 4 caracteres.");
+                  setRegisterError("⚠️ El nombre de usuario debe tener al menos 4 caracteres.");
                   return;
                 }
 
                 const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
                 if (!passwordRegex.test(password)) {
-                  setRegisterError("⚠️ La contraseña es obligatoria.");
+                  setRegisterError("⚠️ La contraseña debe tener mayúsculas, números y un carácter especial.");
+                  return;
+                }
+
+                if (!passwordRegex.test(recoveryKey)) {
+                  setRegisterError("⚠️ La clave secreta debe tener mayúsculas, números y un carácter especial.");
                   return;
                 }
 
@@ -287,14 +293,27 @@ const Welcome = () => {
                   const response = await fetch('http://localhost:8080/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({ username, password, recoveryKey }),
                   });
 
                   if (response.ok) {
+                    const blob = new Blob(
+                      [`Este archivo contiene tu clave secreta de recuperación.\nGuárdalo en un lugar seguro.\nSi la pierdes, no podrás recuperar tu cuenta.\nCLAVE SECRETA: ${recoveryKey}`],
+                      { type: 'text/plain;charset=utf-8' }
+                    );
+                    const url = URL.createObjectURL(blob);
+
                     setModalConfig({
-                      message: "// Usuario registrado correctamente",
-                      confirmText: "Iniciar sesión",
-                      onConfirm: () => setActiveSection('login')
+                      message: `// Usuario registrado correctamente.\n\n⚠️ Esta es tu única oportunidad para guardar la clave secreta.`,
+                      confirmText: "Descargar clave secreta",
+                      onConfirm: () => {
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `almita_virtual_clave_secreta.txt`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        setActiveSection('login');
+                      }
                     });
                   } else {
                     const errorJson = await response.json();
@@ -308,6 +327,7 @@ const Welcome = () => {
                 }
               }}
             >
+
               <label>
                 Usuario
                 <input
@@ -335,13 +355,28 @@ const Welcome = () => {
                 Debe contener al menos una letra mayúscula, un número y un carácter especial.
               </span>
 
+              <label>
+                Clave secreta
+                <input
+                  type="password"
+                  name="recoveryKey"
+                  placeholder="Para recuperar contraseña"
+                  required
+                  minLength="8"
+                />
+              </label>
+
+              <span className="hint">
+                Debe cumplir los mismos requisitos que la contraseña.
+              </span>
+
               <button type="submit">Registrarse</button>
               {registerError && <span className="error-msg">{registerError}</span>}
             </form>
           </div>
         )}
 
-        {/* 🔘 BOTÓN HOLA (animación Almita) */} 
+        {/* 🔘 BOTÓN HOLA (animación Almita) */}
         {activeSection === 'hola' && (
           <div className="info-box almita-box">
             <AlmitaDisplay status="IDLE" color="BLUE" />

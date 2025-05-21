@@ -319,5 +319,15 @@ input:-webkit-autofill {
   }
 }
 
+/* Ajusta el espacio entre el label de "Clave secreta" y el anterior */
+.form-box label:nth-of-type(3) {
+  margin-top: -8px; /* Reduce espacio vertical entre contraseña y clave secreta */
+}
+
+/* Ajusta la separación del botón de "Registrarse" */
+.form-box button[type="submit"] {
+  margin-top: 16px; /* Puedes bajar a 12px si querés más compacto */
+}
+
 
 
