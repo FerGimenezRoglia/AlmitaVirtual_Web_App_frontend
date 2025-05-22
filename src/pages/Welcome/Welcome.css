@@ -329,5 +329,19 @@ input:-webkit-autofill {
   margin-top: 16px; /* Puedes bajar a 12px si querés más compacto */
 }
 
+.forgot-password-link {
+  margin-top: 0rem;
+  font-size: 0.90rem;
+  text-align: left;
+  color: solid var(--color-main-1);
+  cursor: pointer;
+  transition: color 0.2s;
+}
 
+.forgot-password-link:hover {
+  color: var(--color-main-1);
+}
 
+form.form-box label:nth-of-type(3) {
+  margin-top: 0rem; /* Ajusta el margen de palabra nueva contraseña en formulario */
+}

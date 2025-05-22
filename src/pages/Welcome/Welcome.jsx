@@ -177,7 +177,7 @@ const Welcome = () => {
                 setLoginError("");
 
                 if (username.length < 4) {
-                  setLoginError("⚠️ El nombre de usuario es obligatorio y debe tener al menos 4 caracteres.");
+                  setLoginError("⚠️ Debes ingresar un nombre de usuario registrado.");
                   return;
                 }
 
@@ -228,7 +228,7 @@ const Welcome = () => {
                     });
                   }
                 } catch (err) {
-                  console.error('❌ Error inesperado en login:', err);
+                  console.error('// Error inesperado en login:', err);
                 }
               }}
             >
@@ -254,6 +254,110 @@ const Welcome = () => {
               </label>
 
               <button type="submit">Iniciar sesión</button>
+
+              <p
+                className="forgot-password-link"
+                onClick={() => setActiveSection('recover')}
+              >
+                ¿Olvidaste tu contraseña?
+              </p>
+
+              {loginError && <span className="error-msg">{loginError}</span>}
+            </form>
+          </div>
+        )}
+
+        {/* 🔘 RECOVER PASSWORD */}
+        {activeSection === 'recover' && (
+          <div className="info-box">
+            <form
+              className="form-box"
+              noValidate
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const username = e.target.username.value.trim();
+                const recoveryKey = e.target.recoveryKey.value.trim();
+                const newPassword = e.target.newPassword.value.trim();
+
+                setLoginError("");
+
+                if (!username) {
+                  setLoginError("⚠️ Debes ingresar un nombre de usuario registrado.");
+                  return;
+                }
+
+                if (!recoveryKey) {
+                  setLoginError("⚠️ La clave secreta es obligatoria.");
+                  return;
+                }
+
+                const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+                if (!passwordRegex.test(newPassword)) {
+                  setLoginError("⚠️ Debes ingresar una nueva contraseña válida.");
+                  return;
+                }
+
+                try {
+                  const response = await fetch("http://localhost:8080/auth/recovery", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, recoveryKey, newPassword }),
+                  });
+
+                  if (response.ok) {
+                    setModalConfig({
+                      message: "// Contraseña actualizada correctamente",
+                      confirmText: "Iniciar sesión",
+                      onConfirm: () => setActiveSection("login")
+                    });
+                  } else {
+                    setModalConfig({
+                      message: "⚠️ Clave secreta incorrecta. Si la has perdido, no podemos recuperar tu cuenta. Te recomendamos crear una nueva.",
+                      confirmText: "Aceptar"
+                    });
+                  }
+                } catch (err) {
+                  console.error("Error inesperado en recuperación:", err);
+                }
+              }}
+            >
+              <label>
+                Usuario
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Tu nombre de usuario"
+                  required
+                  maxLength="20"
+                />
+              </label>
+
+              <label>
+                Clave secreta
+                <input
+                  type="password"
+                  name="recoveryKey"
+                  placeholder="Tu clave secreta"
+                  required
+                />
+              </label>
+
+              <label>
+                Nueva contraseña
+                <input
+                  type="password"
+                  name="newPassword"
+                  placeholder="Tu nueva contraseña"
+                  required
+                  minLength="8"
+                />
+              </label>
+
+              <span className="hint">
+                Debe contener al menos una letra mayúscula, un número y un carácter especial.
+              </span>
+
+              <button type="submit">Recuperar contraseña</button>
               {loginError && <span className="error-msg">{loginError}</span>}
             </form>
           </div>
