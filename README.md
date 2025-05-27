@@ -29,7 +29,7 @@ El foco de este cliente web es **una experiencia visual, emocional y personal**,
 - Vite
 - React Router
 - Tailwind CSS
-- Cloudinary (para previsualizar imágenes)
+- AWS-S3(para previsualizar archivos)
 - CSS Modules y variables CSS
 - Iconografía SVG personalizada
 
@@ -41,7 +41,7 @@ src/
 ├── components/        # Botones, modales, cuadrantes, etc.
 ├── pages/             # Home, Environment
 ├── routes/            # Configuración de rutas
-├── utils/             # Helpers (Cloudinary, colores, frases)
+├── utils/             # Helpers (colores, frases)
 ├── main.jsx           # Entry point
 └── index.css          # Estilos globales
 ```
@@ -69,7 +69,7 @@ npm run dev
 
 ##  Variables de entorno
 
-Crear un archivo `.env` en la raíz con tus variables personalizadas si usas servicios externos como Cloudinary.
+Crear un archivo `.env` en la raíz con tus variables personalizadas si usas servicios externos como Amazon S3.
 
 ##  Tests
 

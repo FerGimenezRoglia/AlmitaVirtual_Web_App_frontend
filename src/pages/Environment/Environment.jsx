@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
 import screenImage from "../../assets/images/screen.svg";
 import keyboardImage from "../../assets/images/keyboard.svg";
-import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import './Environment.css';
 import ModalBase from '../../components/atoms/ModalBase';
 
@@ -153,48 +152,46 @@ const Environment = () => {
       return;
     }
 
+    // Validar tamaño máximo (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setPopupText("⚠️ El archivo debe pesar menos de 5MB.");
+      setShowPopup(true);
+      return;
+    }
+
     try {
-      const uploadedUrl = await uploadFileToCloudinary(file);
+      const formData = new FormData();
+      formData.append("file", file);
 
-      if (!uploadedUrl) {
-        setPopupText("// Error al subir el archivo. Inténtalo de nuevo.");
-        setShowPopup(true);
-        return;
-      }
-
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await fetch(`http://localhost:8080/environments/${id}/file`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
           Authorization: `Bearer ${token}`,
         },
-        body: new URLSearchParams({ fileUrl: uploadedUrl }),
+        body: formData,
       });
 
       if (response.ok) {
         const updatedEnv = await response.json();
         setEnv(updatedEnv);
         setPopupText("// Archivo subido correctamente.");
-        setShowPopup(true);
-        setTimeout(() => {
-          setShowPopup(false);
-        }, 10000);
       } else {
         const errorText = await response.text();
-        setPopupText(`// Error al registrar archivo: ${errorText}`);
-        setShowPopup(true);
+        setPopupText(`Error al registrar archivo: ${errorText}`);
       }
+
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 10000);
     } catch (error) {
-      console.error("// Error inesperado al subir archivo:", error);
-      setPopupText("// Error inesperado. Inténtalo más tarde.");
+      console.error("Error inesperado al subir archivo:", error);
+      setPopupText("Error inesperado. Inténtalo más tarde.");
       setShowPopup(true);
     } finally {
       if (fileInputRef.current) {
-        fileInputRef.current.value = ''; // ✅ Se limpia el input solo cuando TODO terminó bien o mal
+        fileInputRef.current.value = '';
       }
     }
-
   };
 
   // ☑️ Función que maneja el clic en el botón "Eliminar" 
@@ -239,20 +236,21 @@ const Environment = () => {
         }, 10000);
       } else {
         const errorText = await response.text();
-        setPopupText(`// Error al eliminar archivo: ${errorText}`);
+        setPopupText(`Error al eliminar archivo: ${errorText}`);
         setShowPopup(true);
       }
     } catch (error) {
-      console.error("// Error inesperado al eliminar archivo:", error);
-      setPopupText("// Error inesperado. Inténtalo más tarde.");
+      console.error("Error inesperado al eliminar archivo:", error);
+      setPopupText("Error inesperado. Inténtalo más tarde.");
       setShowPopup(true);
     } finally {
       setShowDeleteConfirm(false); // Cerramos confirmación siempre
     }
   };
 
-  // ☑️ Función que elimina el archivo del entorno
+  // ☑️ Función para visualizar el archivo (imagen o PDF)
   const handleViewFileClick = async () => {
+    // Si no hay URL, se avisa al usuario
     if (!env.url) {
       setMonitorPopupText("⚠️ No hay archivo para visualizar.");
       setShowMonitorPopup(true);
@@ -261,22 +259,14 @@ const Environment = () => {
     }
 
     try {
+      // Petición al backend para obtener la URL del archivo
       const response = await fetch(`http://localhost:8080/public/environments/${id}/file`);
       if (response.ok) {
         const url = await response.text();
+        setFileUrl(url);              // Guardamos la URL para mostrar en modal
+        setShowFileViewer(true);      // Activamos el modal visor
 
-        if (url.endsWith(".pdf")) {
-          // Mostrar mensaje en el monitor en lugar del visor
-          setMonitorPopupText("// Archivo PDF habilitado para descarga.");
-          setShowMonitorPopup(true);
-          setTimeout(() => setShowMonitorPopup(false), 10000);
-          return;
-        }
-
-        // Si es imagen, sí mostramos visor
-        setFileUrl(url);
-        setShowFileViewer(true);
-
+        // Petición secundaria: refrescamos el entorno para actualizar estado
         const envResponse = await fetch(`http://localhost:8080/public/environments/${id}`);
         if (envResponse.ok) {
           const updatedEnv = await envResponse.json();
@@ -284,12 +274,13 @@ const Environment = () => {
         }
 
       } else {
-        setPopupText("// Error al cargar el archivo.");
+        // Si falla la carga
+        setPopupText("Error al cargar el archivo.");
         setShowPopup(true);
       }
     } catch (error) {
-      console.error("// Error al visualizar archivo:", error);
-      setPopupText("// Error inesperado. Inténtalo más tarde.");
+      console.error("Error al visualizar archivo:", error);
+      setPopupText("Error inesperado. Inténtalo más tarde.");
       setShowPopup(true);
     }
   };
@@ -302,50 +293,36 @@ const Environment = () => {
       setTimeout(() => setShowMonitorPopup(false), 10000);
       return;
     }
-  
+
     try {
-      // Llamada que cambia el estado en backend
-      const response = await fetch(`http://localhost:8080/public/environments/${id}/file`);
-      if (!response.ok) {
-        throw new Error("No se pudo obtener el archivo");
-      }
-  
-      const url = await response.text();
+      const url = env.url;
       const extension = url.split('.').pop().toLowerCase();
       const isImage = extension === 'jpg' || extension === 'jpeg' || extension === 'png';
-  
-      if (!isImage) {
-        setMonitorPopupText("⚠️ Solo se puede descargar imágenes JPG/PNG.");
+
+      if (isImage) {
+        // Descargar imagen como archivo directamente
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = objectUrl;
+        a.download = `archivo_${username || 'user'}.${extension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(objectUrl);
+
+        setMonitorPopupText("// Imagen descargada correctamente.");
         setShowMonitorPopup(true);
         setTimeout(() => setShowMonitorPopup(false), 10000);
-        return;
+      } else {
+        // PDF: abrir en una pestaña nueva
+        window.open(url, '_blank');
       }
-  
-      const blobResponse = await fetch(url);
-      const blob = await blobResponse.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = objectUrl;
-      a.download = `archivo_${username || 'user'}.${extension}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(objectUrl);
-  
-      // Actualizar entorno
-      const envRes = await fetch(`http://localhost:8080/public/environments/${id}`);
-      if (envRes.ok) {
-        const updatedEnv = await envRes.json();
-        setEnv(updatedEnv);
-      }
-  
-      setMonitorPopupText("// Imagen descargada correctamente.");
-      setShowMonitorPopup(true);
-      setTimeout(() => setShowMonitorPopup(false), 10000);
-  
+
     } catch (error) {
-      console.error("// Error al descargar imagen:", error);
-      setMonitorPopupText("// Error al descargar.");
+      console.error("Error al descargar archivo:", error);
+      setMonitorPopupText("Error al descargar.");
       setShowMonitorPopup(true);
       setTimeout(() => setShowMonitorPopup(false), 10000);
     }
@@ -536,9 +513,7 @@ const Environment = () => {
                       data={fileUrl}
                       type="application/pdf"
                       className="file-viewer-iframe"
-                    >
-                      <p>No se puede mostrar el archivo PDF. <a href={fileUrl} target="_blank" rel="noopener noreferrer">Descargar</a></p>
-                    </object>
+                    />
                   ) : (
                     <img src={fileUrl} alt="Archivo" className="file-viewer-img" />
                   )}

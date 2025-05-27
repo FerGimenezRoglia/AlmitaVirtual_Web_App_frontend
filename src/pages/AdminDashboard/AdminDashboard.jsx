@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import { getUsernameFromToken } from '../../utils/jwtUtils';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
 import ModalBase from '../../components/atoms/ModalBase';
@@ -79,7 +78,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // ☑️ Maneja la creación de un nuevo entorno (igual a Profile)
+  // ☑️ Maneja la creación de un nuevo entorno
   const handleCreateEnvironment = async (e) => {
     e.preventDefault();
 
@@ -99,28 +98,23 @@ const AdminDashboard = () => {
       return;
     }
 
-    setCreateError("");
-    let fileUrl = "";
-
-    if (file) {
-      try {
-        const uploadedUrl = await uploadFileToCloudinary(file);
-        if (!uploadedUrl) throw new Error("No se obtuvo URL del archivo");
-        fileUrl = uploadedUrl;
-      } catch (error) {
-        alert("❌ Error al subir el archivo: " + error.message);
-        return;
-      }
+    if (file && !["application/pdf", "image/jpeg", "image/png"].includes(file.type)) {
+      setCreateError("⚠️ Solo se permiten PDF o imágenes JPG/PNG.");
+      return;
+    }
+    if (file && file.size > 5 * 1024 * 1024) {
+      setCreateError("⚠️ El archivo debe pesar menos de 5MB.");
+      return;
     }
 
-    const payload = {
-      title,
-      description,
-      color,
-      url: fileUrl
-    };
-
     try {
+      const payload = {
+        title,
+        description,
+        color,
+        url: "" // Primero vacío, se actualiza luego si hay archivo
+      };
+
       const response = await fetch("http://localhost:8080/environments", {
         method: "POST",
         headers: {
@@ -131,22 +125,42 @@ const AdminDashboard = () => {
       });
 
       if (response.status === 201) {
-        const data = await response.json();
-        // alert("☑️ Entorno creado con éxito");
-        navigate(`/environment/${data.id}`);
+        const created = await response.json();
+
+        if (file) {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const uploadResponse = await fetch(
+            `http://localhost:8080/environments/${created.id}/file`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              body: formData,
+            }
+          );
+
+          if (!uploadResponse.ok) {
+            const err = await uploadResponse.text();
+            alert("⚠️ Archivo no subido: " + err);
+          }
+        }
+
+        navigate(`/environment/${created.id}`);
       } else {
         const errorText = await response.text();
-        alert("❌ Error al crear entorno: " + errorText);
+        alert("Error al crear entorno: " + errorText);
       }
     } catch (err) {
-      alert("❌ Error de red: " + err.message);
+      alert("Error de red: " + err.message);
     }
   };
 
   // ☑️ Maneja la actualización de un entorno existente
   const handleUpdateEnvironment = async (e) => {
     e.preventDefault();
-
     setEditError("");
 
     const token = localStorage.getItem("token");
@@ -160,18 +174,18 @@ const AdminDashboard = () => {
       return;
     }
 
-    try {
-      let newFileUrl = editFormData.url;
-
-      if (editFormData.file) {
-        const uploadedUrl = await uploadFileToCloudinary(editFormData.file);
-        if (!uploadedUrl) {
-          alert("❌ Error al subir el archivo");
-          return;
-        }
-        newFileUrl = uploadedUrl;
+    if (editFormData.file) {
+      if (!["application/pdf", "image/jpeg", "image/png"].includes(editFormData.file.type)) {
+        setEditError("⚠️ Solo se permiten PDF o imágenes JPG/PNG.");
+        return;
       }
+      if (editFormData.file.size > 5 * 1024 * 1024) {
+        setEditError("⚠️ El archivo debe pesar menos de 5MB.");
+        return;
+      }
+    }
 
+    try {
       const baseUpdate = {
         title: editFormData.title,
         description: editFormData.description,
@@ -194,25 +208,28 @@ const AdminDashboard = () => {
       }
 
       if (editFormData.file) {
-        const registerFile = await fetch(`http://localhost:8080/environments/${selectedEnvId}/file`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Bearer ${token}`,
-          },
-          body: new URLSearchParams({ fileUrl: newFileUrl }),
-        });
+        const formData = new FormData();
+        formData.append("file", editFormData.file);
 
-        if (!registerFile.ok) {
-          const errorText = await registerFile.text();
+        const uploadResponse = await fetch(
+          `http://localhost:8080/environments/${selectedEnvId}/file`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          }
+        );
+
+        if (!uploadResponse.ok) {
+          const errorText = await uploadResponse.text();
           alert("❌ Archivo subido pero error al registrar en backend: " + errorText);
           return;
         }
       }
 
-      // alert("🟢 Entorno actualizado con éxito");
       navigate(`/environment/${selectedEnvId}`);
-
     } catch (err) {
       alert("❌ Error inesperado: " + err.message);
     }

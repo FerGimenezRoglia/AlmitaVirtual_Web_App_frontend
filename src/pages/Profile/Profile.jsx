@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './Profile.css';
 import Button from '../../components/atoms/Button';
 import { useNavigate } from 'react-router-dom';
-import { uploadFileToCloudinary } from '../../utils/cloudinaryUpload';
 import { getUsernameFromToken } from '../../utils/jwtUtils';
 import AlmitaDisplay from '../../components/AlmitaDisplay';
 import ModalBase from '../../components/atoms/ModalBase';
-
 
 
 const Profile = () => {
@@ -109,65 +107,80 @@ const Profile = () => {
       return;
     }
 
-    // Extraemos todos los valores del formulario
-    const title = e.target.title.value;
+    // Extraemos datos del formulario
+    const title = e.target.title.value.trim();
     const description = e.target.description.value;
     const color = e.target.color.value;
-    const file = e.target.file.files[0]; // archivo opcional
+    const file = e.target.file.files[0];
 
-    // Validación manual del campo título
-    if (!title.trim()) {
+    // Validación del archivo antes de continuar
+    if (file && !["application/pdf", "image/jpeg", "image/png"].includes(file.type)) {
+      setCreateError("⚠️ Solo se permiten PDF o imágenes JPG/PNG.");
+      return;
+    }
+    if (file && file.size > 5 * 1024 * 1024) {
+      setCreateError("⚠️ El archivo debe pesar menos de 5MB.");
+      return;
+    }
+
+    if (!title) {
       setCreateError("⚠️ El título es obligatorio!");
       return;
     }
 
-    setCreateError(""); // Limpiamos error si pasa la validación
+    setCreateError(""); // limpiamos error si pasa validación
 
-    let fileUrl = ""; // inicializamos el link del archivo vacío
-
-    // Si el usuario cargó un archivo, lo subimos a Cloudinary
-    if (file) {
-      try {
-        const uploadedUrl = await uploadFileToCloudinary(file);
-        if (!uploadedUrl) throw new Error("No se obtuvo URL del archivo");
-        fileUrl = uploadedUrl;
-      } catch (error) {
-        alert("// Error al subir el archivo: " + error.message);
-        return;
-      }
-    }
-
-    // Armamos el objeto con todos los campos
-    const payload = {
-      title,
-      description,
-      color,
-      url: fileUrl // puede ser vacío si no subió archivo
-    };
-
-    // Mandamos el entorno al backend
     try {
+      // 1. Enviar solo los datos básicos como JSON
       const response = await fetch("http://localhost:8080/environments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          title,
+          description,
+          color,
+          url: "", // se completará después si sube archivo
+        }),
       });
 
-      if (response.status === 201) {
-        const data = await response.json();
-        // Entorno creado con éxito (mensaje suprimido)
-
-        // Redirigimos al entorno recién creado
-        navigate(`/environment/${data.id}`);
-      } else {
+      if (!response.ok) {
         const errorText = await response.text();
-        alert("// Error al crear entorno: " + errorText);
+        alert("Error al crear entorno: " + errorText);
+        return;
       }
+
+      const createdEnv = await response.json();
+
+      // 2. Si el usuario subió un archivo, lo enviamos ahora
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const uploadResponse = await fetch(
+          `http://localhost:8080/environments/${createdEnv.id}/file`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          }
+        );
+
+        if (!uploadResponse.ok) {
+          const errorText = await uploadResponse.text();
+          alert("Error al subir el archivo: " + errorText);
+          return;
+        }
+      }
+
+      // Navegamos al entorno creado
+      navigate(`/environment/${createdEnv.id}`);
     } catch (err) {
-      alert("// Error de red: " + err.message);
+      alert("Error inesperado: " + err.message);
     }
   };
 
@@ -175,7 +188,7 @@ const Profile = () => {
   const handleUpdateEnvironment = async (e) => {
     e.preventDefault();
 
-    setEditError(""); // Limpiamos el error si pasa validación
+    setEditError(""); // Limpiamos errores
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -183,30 +196,29 @@ const Profile = () => {
       return;
     }
 
-    // Validación manual del campo título
+    // Validación
     if (!editFormData.title.trim()) {
       setEditError("⚠️ El título es obligatorio!");
       return;
     }
-    setEditError(""); // Limpiamos error si pasa la validación
+
+    // Validación del archivo antes de subir
+    const file = editFormData.file;
+    if (file && !["application/pdf", "image/jpeg", "image/png"].includes(file.type)) {
+      setEditError("⚠️ Solo se permiten PDF o imágenes JPG/PNG.");
+      return;
+    }
+    if (file && file.size > 5 * 1024 * 1024) {
+      setEditError("⚠️ El archivo debe pesar menos de 5MB.");
+      return;
+    }
 
     try {
-      // 1. Subimos archivo si hay uno nuevo
-      let newFileUrl = editFormData.url;
-      if (editFormData.file) {
-        const uploadedUrl = await uploadFileToCloudinary(editFormData.file);
-        if (!uploadedUrl) {
-          alert("// Error al subir el archivo");
-          return;
-        }
-        newFileUrl = uploadedUrl;
-      }
-
-      // 2. Actualizamos campos básicos (sin archivo aún)
+      // 1. Actualizamos los datos básicos
       const baseUpdate = {
         title: editFormData.title,
         description: editFormData.description,
-        color: editFormData.color
+        color: editFormData.color,
       };
 
       const response = await fetch(`http://localhost:8080/environments/${selectedEnvId}`, {
@@ -220,40 +232,42 @@ const Profile = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        alert("// Error al actualizar entorno: " + errorText);
+        alert("Error al actualizar entorno: " + errorText);
         return;
       }
 
-      // 3. Si se subió un archivo nuevo, lo registramos en el backend
+      // 2. Si se seleccionó un nuevo archivo, lo subimos
       if (editFormData.file) {
-        const registerFile = await fetch(`http://localhost:8080/environments/${selectedEnvId}/file`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Bearer ${token}`,
-          },
-          body: new URLSearchParams({ fileUrl: newFileUrl }),
-        });
+        const formData = new FormData();
+        formData.append("file", editFormData.file);
 
-        if (!registerFile.ok) {
-          const errorText = await registerFile.text();
-          alert("// Archivo subido pero error al registrar en backend: " + errorText);
+        const uploadResponse = await fetch(
+          `http://localhost:8080/environments/${selectedEnvId}/file`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+          }
+        );
+
+        if (!uploadResponse.ok) {
+          const errorText = await uploadResponse.text();
+          alert("Archivo no se pudo subir: " + errorText);
           return;
         }
       }
 
-      // Entorno actualizado con éxito (mensaje suprimido)
+      // 3. Redirigir al entorno actualizado
       navigate(`/environment/${selectedEnvId}`);
-
     } catch (err) {
-      alert("// Error inesperado: " + err.message);
+      alert("Error inesperado: " + err.message);
     }
   };
 
   // ☑️ Maneja la eliminación de un entorno
   const handleDeleteEnvironment = async (envId) => {
-    //const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este entorno?");
-    //if (!confirmDelete) return;
 
     const token = localStorage.getItem("token");
     if (!token) {
