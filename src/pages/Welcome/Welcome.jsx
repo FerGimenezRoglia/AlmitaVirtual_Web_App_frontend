@@ -32,8 +32,8 @@ function getRoleFromToken(token) {
 const Welcome = () => {
   const [activeSection, setActiveSection] = useState(null);
   const navigate = useNavigate();
-  const [loginSuccess, setLoginSuccess] = useState(false); // 🟢 Login exitoso
-  const [pendingRole, setPendingRole] = useState(null); // 👑 Rol pendiente para redirigir
+  const [loginSuccess, setLoginSuccess] = useState(false); // Login exitoso
+  const [pendingRole, setPendingRole] = useState(null); // Rol pendiente para redirigir
   const [registerError, setRegisterError] = useState("");
   const [loginError, setLoginError] = useState("");
   const [modalConfig, setModalConfig] = useState(null);
@@ -78,6 +78,8 @@ const Welcome = () => {
         <div className="menu-block">
           <div className="grouped-items">
             <p className="menu-item first" onClick={() => setActiveSection('info')}>INFO _</p>
+
+            <p className="menu-item" onClick={() => setActiveSection('leer')}>LEER _</p>
 
             <div className="grouped-items">
               <p className="menu-item">
@@ -150,6 +152,38 @@ const Welcome = () => {
             <div className="info-text">
               <p><span className="highlighted-section">"Almita Virtual" </span>es una App web donde cada usuario puede crear entornos personalizados para presentar o compartir sus documentos importantes, como el Currículum Vitae o carta de presentación.</p>
               <p>Cada entorno está representado por un personaje "Almita" que cambia de estado según la interacción del usuario o visitante. La propuesta combina solidez técnica con una experiencia estética sensible y simbólica.</p>
+            </div>
+          </div>
+        )}
+
+        {/* 🔘 LEER */}
+        {activeSection === 'leer' && (
+          <div className="info-box">
+            <div className="info-text">
+              <p>
+                Esta aplicación web fue desarrollada como proyecto final del Bootcamp de Backend con Java (IT Academy - Barcelona Activa).
+              </p>
+
+              <p>
+                Su finalidad es servir como entorno de pruebas, exploración y presentación. El acceso es público, y podés interactuar libremente con sus funcionalidades.
+              </p>
+
+              <p className="highlighted-section">
+                ⚠️ Sin embargo, no se recomienda subir información sensible o confidencial, ya que se trata de una demo activa y en desarrollo. Todo lo que decidas compartir es tu responsabilidad como usuario.
+              </p>
+
+              <p>
+                El único administrador y responsable del mantenimiento es <strong>Fer Giménez Roglia</strong>. Para cualquier consulta, comentario o propuesta podés contactarme a:
+              </p>
+              <div className="contact-links">
+                <a href="mailto:almitavirtual@gmail.com">almitavirtual@gmail.com</a>
+                <a href="https://github.com/FerGimenezRoglia" target="_blank" rel="noopener noreferrer">github.com/FerGimenezRoglia</a>
+                <a href="https://www.linkedin.com/in/fergimenezroglia/" target="_blank" rel="noopener noreferrer">linkedin.com/in/fergimenezroglia</a>
+              </div>
+
+              <p>
+                Gracias por explorar este espacio. Espero que esta herramienta te sea útil, tanto para inspirarte como para mostrar el alma de lo que hacés.
+              </p>
             </div>
           </div>
         )}
